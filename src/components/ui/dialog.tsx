@@ -63,14 +63,14 @@ export function Dialog({
         aria-labelledby={title ? 'dialog-title' : undefined}
         aria-describedby={description ? 'dialog-desc' : undefined}
         className={cn(
-          'relative w-full rounded-2xl bg-white p-6 shadow-2xl transition-all animate-slide-up border border-gray-100 z-10 max-h-[90vh] overflow-y-auto',
+          'relative w-full rounded-2xl bg-white/70 backdrop-blur-md border border-slate-900/10 p-6 shadow-lg transition-all animate-slide-up z-10 max-h-[90vh] overflow-y-auto',
           maxWidthClasses[maxWidth]
         )}
       >
         {showCloseButton && (
           <button
             onClick={onClose}
-            className="absolute right-4 top-4 rounded-full p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-primary/30"
+            className="absolute right-4 top-4 rounded-full p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
             aria-label="Close dialog"
           >
             <X className="h-5 w-5" />

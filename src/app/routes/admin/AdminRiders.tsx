@@ -38,7 +38,9 @@ export const AdminRiders: React.FC = () => {
         </Badge>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-0">
+      <section className="border-r border-sky-900/15 pr-4 bg-white/25 backdrop-blur-md">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {riders.map((rider) => (
           <Card key={rider.user_id} className="shadow-card border border-gray-100 hover:border-primary/30 transition-all">
             <CardContent className="p-5 space-y-4">
@@ -109,6 +111,9 @@ export const AdminRiders: React.FC = () => {
             </CardContent>
           </Card>
         ))}
+      </div>
+      </section>
+      <section className="pl-4 bg-white/25 backdrop-blur-md" aria-hidden="true" />
       </div>
     </div>
   );

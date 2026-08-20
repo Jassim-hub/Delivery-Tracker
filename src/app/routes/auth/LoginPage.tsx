@@ -42,11 +42,11 @@ export const LoginPage: React.FC = () => {
   const customerProfile = availableProfiles.find((p) => p.role === 'customer');
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-page-bg">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-sky-50">
       <div className="w-full max-w-md space-y-5 animate-fade-in">
         {/* Brand Header */}
         <div className="text-center space-y-2">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-primary text-accent text-2xl font-black shadow-purple">
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-blue-700 text-accent text-2xl font-black shadow-sm">
             DT
           </div>
           <h1 className="text-2xl font-black text-primary">Delivery Tracker Pro</h1>
@@ -69,7 +69,7 @@ export const LoginPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => handleQuickDemoLogin(riderProfile.id, 'rider')}
-                className="flex flex-col items-center p-2.5 rounded-xl bg-white hover:bg-purple-50 border border-amber-200 shadow-sm transition-all hover:scale-105"
+                className="flex flex-col items-center p-2.5 rounded-xl bg-white hover:bg-blue-50 border border-amber-200 shadow-sm transition-all hover:scale-105"
               >
                 <Bike className="w-5 h-5 text-accent mb-1" />
                 <span className="text-[11px] font-bold text-gray-900">Rider</span>
@@ -81,7 +81,7 @@ export const LoginPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => handleQuickDemoLogin(customerProfile.id, 'customer')}
-                className="flex flex-col items-center p-2.5 rounded-xl bg-white hover:bg-purple-50 border border-amber-200 shadow-sm transition-all hover:scale-105"
+                className="flex flex-col items-center p-2.5 rounded-xl bg-white hover:bg-blue-50 border border-amber-200 shadow-sm transition-all hover:scale-105"
               >
                 <UserCheck className="w-5 h-5 text-emerald-600 mb-1" />
                 <span className="text-[11px] font-bold text-gray-900">Customer</span>
@@ -93,9 +93,9 @@ export const LoginPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => handleQuickDemoLogin(adminProfile.id, 'admin')}
-                className="flex flex-col items-center p-2.5 rounded-xl bg-white hover:bg-purple-50 border border-amber-200 shadow-sm transition-all hover:scale-105"
+                className="flex flex-col items-center p-2.5 rounded-xl bg-white hover:bg-blue-50 border border-amber-200 shadow-sm transition-all hover:scale-105"
               >
-                <Shield className="w-5 h-5 text-purple-600 mb-1" />
+                <Shield className="w-5 h-5 text-blue-700 mb-1" />
                 <span className="text-[11px] font-bold text-gray-900">Admin</span>
                 <span className="text-[9px] text-muted">Dispatch HQ</span>
               </button>
@@ -138,7 +138,7 @@ export const LoginPage: React.FC = () => {
               type="submit"
               variant="primary"
               isLoading={isLoading}
-              className="w-full font-bold text-xs py-3 mt-2 shadow-purple"
+              className="w-full font-bold text-xs py-3 mt-2 shadow-sm"
             >
               <Lock className="w-3.5 h-3.5 mr-1" />
               Sign In to Portal

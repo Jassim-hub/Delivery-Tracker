@@ -38,7 +38,7 @@ const AVG_DURATION_DATA = [
 const RATINGS_DISTRIBUTION = [
   { stars: '5 Stars', count: 185, color: '#1E9E64' },
   { stars: '4 Stars', count: 42, color: '#F5A623' },
-  { stars: '3 Stars', count: 12, color: '#8A62D2' },
+  { stars: '3 Stars', count: 12, color: '#60A5FA' },
   { stars: '2 Stars', count: 3, color: '#F7941D' },
   { stars: '1 Star', count: 1, color: '#D64545' },
 ];
@@ -104,7 +104,7 @@ export const AdminAnalytics: React.FC = () => {
                 <YAxis stroke="#6B6B7A" fontSize={11} />
                 <Tooltip contentStyle={{ borderRadius: '10px', fontSize: '12px' }} />
                 <Legend wrapperStyle={{ fontSize: '11px' }} />
-                <Bar dataKey="completed" fill="#4B2586" name="Completed" radius={[6, 6, 0, 0]} />
+                <Bar dataKey="completed" fill="#1D4ED8" name="Completed" radius={[6, 6, 0, 0]} />
                 <Bar dataKey="target" fill="#F5A623" name="SLA Target" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
@@ -127,7 +127,7 @@ export const AdminAnalytics: React.FC = () => {
                   dataKey="minutes"
                   stroke="#F5A623"
                   strokeWidth={3}
-                  dot={{ r: 5, fill: '#4B2586' }}
+                  dot={{ r: 5, fill: '#1D4ED8' }}
                   name="Avg Minutes"
                 />
               </LineChart>

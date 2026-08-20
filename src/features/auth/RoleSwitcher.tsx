@@ -27,7 +27,7 @@ export const RoleSwitcher: React.FC = () => {
   const getRoleIcon = (role: string) => {
     switch (role) {
       case 'admin':
-        return <Shield className="w-4 h-4 text-purple-600" />;
+        return <Shield className="w-4 h-4 text-blue-700" />;
       case 'rider':
         return <Bike className="w-4 h-4 text-amber-600" />;
       case 'customer':
@@ -43,7 +43,7 @@ export const RoleSwitcher: React.FC = () => {
       <div className="relative">
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-full bg-surface border border-primary/20 shadow-purple text-xs font-bold text-primary hover:bg-page-bg hover:scale-105 transition-all duration-200"
+          className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-full bg-white/60 backdrop-blur-sm border border-slate-900/10 shadow-sm text-xs font-bold text-blue-700 hover:bg-blue-50 hover:scale-105 transition-all duration-200"
           title="Switch Active Persona / Role"
         >
           <span className="flex h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse" />
@@ -86,7 +86,7 @@ export const RoleSwitcher: React.FC = () => {
                         <div className={`text-xs ${isActive ? 'text-white font-bold' : 'text-gray-900 font-semibold'}`}>
                           {p.full_name}
                         </div>
-                        <div className={`text-[10px] capitalize ${isActive ? 'text-purple-200' : 'text-muted'}`}>
+                        <div className={`text-[10px] capitalize ${isActive ? 'text-blue-100' : 'text-muted'}`}>
                           {p.role} {p.role === 'rider' ? '• Yamaha DT 125' : ''}
                         </div>
                       </div>
@@ -115,7 +115,7 @@ export const RoleSwitcher: React.FC = () => {
 
               <button
                 onClick={handleResetData}
-                className="flex items-center gap-1.5 text-[11px] text-muted hover:text-brand-danger font-semibold p-1.5 rounded-lg hover:bg-red-50"
+                className="flex items-center gap-1.5 text-[11px] text-muted hover:text-red-600 font-semibold p-1.5 rounded-lg hover:bg-red-50"
                 title="Reset local state to defaults"
               >
                 <RotateCcw className="w-3.5 h-3.5" />

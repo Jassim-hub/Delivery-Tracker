@@ -60,7 +60,7 @@ export const Navbar: React.FC = () => {
   const navLinks = getNavLinks();
 
   return (
-    <header className="sticky top-0 z-40 bg-gradient-to-r from-primary via-primary-700 to-primary-800 text-white shadow-md">
+    <header className="sticky top-0 z-40 bg-white/60 backdrop-blur-md border-b border-slate-900/10 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Brand Logo */}
@@ -73,14 +73,20 @@ export const Navbar: React.FC = () => {
                 <span className="font-extrabold text-sm sm:text-base leading-tight tracking-tight">
                   Delivery Tracker <span className="text-accent font-black">Pro</span>
                 </span>
-                <span className="text-[9px] text-purple-200 uppercase font-mono tracking-wider">
+                <span className="text-[9px] text-blue-700 uppercase font-mono tracking-wider">
                   Live Dispatch PWA
                 </span>
               </div>
             </Link>
 
             {/* Desktop Navigation Links */}
-            <nav className="hidden md:flex items-center gap-1">
+            <nav
+              className={`hidden md:flex md:gap-1 ${
+                location.pathname.startsWith('/admin')
+                  ? 'md:fixed md:left-4 md:top-20 md:z-30 md:w-56 md:flex-col md:items-stretch md:rounded-2xl md:border md:border-orange-900/15 md:bg-white/50 md:p-3 md:backdrop-blur-md md:shadow-lg'
+                  : 'md:fixed md:left-4 md:top-20 md:z-30 md:w-48 md:flex-col md:items-stretch md:rounded-2xl md:border md:border-sky-900/15 md:bg-white/45 md:p-2 md:backdrop-blur-md md:shadow-sm'
+              }`}
+            >
               {navLinks.map((link) => {
                 const Icon = link.icon;
                 const isActive = location.pathname === link.href;
@@ -88,10 +94,10 @@ export const Navbar: React.FC = () => {
                   <Link
                     key={link.href}
                     to={link.href}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                    className={`flex items-center gap-1.5 px-3 py-2.5 rounded-lg text-xs font-semibold transition-all md:w-full md:justify-start ${
                       isActive
-                        ? 'bg-white/20 text-white shadow-sm'
-                        : 'text-purple-100 hover:bg-white/10 hover:text-white'
+                        ? 'bg-sky-100 text-sky-900 shadow-sm'
+                        : 'text-blue-700 active:text-blue-900 hover:bg-blue-50 hover:text-blue-900'
                     }`}
                   >
                     <Icon className="w-3.5 h-3.5" />
@@ -112,7 +118,7 @@ export const Navbar: React.FC = () => {
                   className="w-8 h-8 rounded-full object-cover border border-white/40"
                 />
                 <div className="text-left">
-                  <div className="text-xs font-bold text-white truncate max-w-[130px]">
+                  <div className="text-xs font-bold text-gray-900 truncate max-w-[130px]">
                     {user.full_name}
                   </div>
                   <Badge variant="accent" className="text-[9px] py-0 px-1.5 uppercase font-bold">
@@ -124,7 +130,7 @@ export const Navbar: React.FC = () => {
 
             <button
               onClick={handleLogout}
-              className="p-2 rounded-xl text-purple-200 hover:text-white hover:bg-white/10 transition-colors"
+              className="p-2 rounded-xl text-blue-700 active:text-blue-900 hover:bg-blue-50 hover:text-blue-900 transition-colors"
               title="Sign Out"
             >
               <LogOut className="w-4 h-4" />
@@ -133,7 +139,7 @@ export const Navbar: React.FC = () => {
             {/* Mobile Menu Hamburger */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-xl text-purple-200 hover:text-white hover:bg-white/10 md:hidden"
+              className="p-2 rounded-xl text-blue-700 active:text-blue-900 hover:bg-blue-50 hover:text-blue-900 md:hidden"
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
@@ -143,7 +149,7 @@ export const Navbar: React.FC = () => {
 
       {/* Mobile Drawer Menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-primary-900 border-t border-white/10 px-4 py-3 space-y-1 animate-slide-up">
+        <div className="md:hidden bg-white/70 backdrop-blur-md border-t border-slate-900/10 px-4 py-3 space-y-1 animate-slide-up">
           {navLinks.map((link) => {
             const Icon = link.icon;
             const isActive = location.pathname === link.href;
@@ -153,7 +159,7 @@ export const Navbar: React.FC = () => {
                 to={link.href}
                 onClick={() => setMobileMenuOpen(false)}
                 className={`flex items-center gap-2 px-3 py-2.5 rounded-xl text-xs font-semibold ${
-                  isActive ? 'bg-white/20 text-white font-bold' : 'text-purple-200 hover:bg-white/10'
+                  isActive ? 'bg-blue-50 text-blue-900 font-bold' : 'text-blue-700 hover:bg-blue-50'
                 }`}
               >
                 <Icon className="w-4 h-4" />

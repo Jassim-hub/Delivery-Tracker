@@ -46,7 +46,7 @@ export const RiderProfile: React.FC = () => {
       )}
 
       {/* Header Profile Card */}
-      <div className="rounded-2xl bg-gradient-to-r from-primary to-primary-800 text-white p-6 shadow-purple">
+      <div className="rounded-2xl bg-orange-100 text-orange-950 p-6 shadow-sm border border-orange-200">
         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 text-center sm:text-left">
           <img
             src={user.avatar_url || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200'}
@@ -60,8 +60,8 @@ export const RiderProfile: React.FC = () => {
                 Verified Rider
               </Badge>
             </div>
-            <p className="text-xs text-purple-200">{user.phone || '+256 772 123 456'}</p>
-            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3 pt-2 text-xs text-purple-200">
+            <p className="text-xs text-orange-900">{user.phone || '+256 772 123 456'}</p>
+            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3 pt-2 text-xs text-orange-900">
               <span className="flex items-center gap-1">
                 <Bike className="w-3.5 h-3.5 text-accent" />
                 {rider?.vehicle_type || 'Yamaha DT 125'} ({rider?.license_plate || 'UFE 234X'})
@@ -74,7 +74,7 @@ export const RiderProfile: React.FC = () => {
               <Star className="w-6 h-6 fill-accent text-accent" />
               <span>{rider?.avg_rating || '5.0'}</span>
             </div>
-            <span className="text-[10px] text-purple-200 font-semibold uppercase tracking-wider">
+            <span className="text-[10px] text-orange-900 font-semibold uppercase tracking-wider">
               {ratings.length} Reviews
             </span>
           </div>

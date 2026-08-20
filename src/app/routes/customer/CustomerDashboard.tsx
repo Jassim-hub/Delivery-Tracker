@@ -22,6 +22,9 @@ import {
   FileText,
   History,
   HelpCircle,
+  X,
+  ArrowLeft,
+  ArrowRight,
 } from 'lucide-react';
 import { formatDateTime } from '@/lib/utils';
 import confetti from 'canvas-confetti';
@@ -37,6 +40,34 @@ export const CustomerDashboard: React.FC = () => {
   // Rating Modal state
   const [ratingDelivery, setRatingDelivery] = useState<Delivery | null>(null);
   const [showTutorialAgain, setShowTutorialAgain] = useState(false);
+  const [tutorialSlideIndex, setTutorialSlideIndex] = useState(0);
+
+  const customerTutorialSlides = [
+    {
+      title: 'Real-Time Delivery Tracking',
+      description:
+        'Watch your rider approach in real time on an interactive live map with precise ETA countdowns and visual status progression.',
+      badge: 'Live Tracking',
+      icon: MapPin,
+    },
+    {
+      title: 'Direct Rider Communication',
+      description:
+        'Send instant messages or click-to-call your assigned rider directly through the encrypted communication channel.',
+      badge: 'Instant Chat',
+      icon: MessageSquare,
+    },
+    {
+      title: 'One-Tap "Received" & Rating',
+      description:
+        'Confirm package delivery with one tap once your rider arrives, and rate your delivery experience with quick tag feedback.',
+      badge: 'Receipt & Rating',
+      icon: Sparkles,
+    },
+  ] as const;
+
+  const currentTutorialSlide = customerTutorialSlides[tutorialSlideIndex];
+  const CurrentTutorialIcon = currentTutorialSlide.icon;
 
   const loadData = () => {
     if (!user) return;
@@ -95,18 +126,11 @@ export const CustomerDashboard: React.FC = () => {
   };
 
   return (
-    <div className="space-y-5 pb-16 max-w-3xl mx-auto">
-      {user && <OnboardingCarousel role="customer" userId={user.id} />}
-
-      {showTutorialAgain && user && (
-        <OnboardingCarousel
-          role="customer"
-          userId={user.id}
-          forceOpen={true}
-          onFinished={() => setShowTutorialAgain(false)}
-        />
-      )}
-
+    <div className="grid grid-cols-1 md:grid-cols-[240px_minmax(0,1fr)_240px] gap-0 space-y-5 pb-16 max-w-3xl md:max-w-7xl mx-auto">
+      <aside className="border-r border-sky-900/15 pr-4 bg-white/25 backdrop-blur-md min-h-full">
+        {user && <OnboardingCarousel role="customer" userId={user.id} />}
+      </aside>
+      <main className="pl-4 md:pl-6 md:border-r border-sky-900/15">
       {/* Customer Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -117,7 +141,10 @@ export const CustomerDashboard: React.FC = () => {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => setShowTutorialAgain(true)}
+            onClick={() => {
+              setTutorialSlideIndex(0);
+              setShowTutorialAgain(true);
+            }}
             className="text-xs font-semibold"
           >
             <HelpCircle className="w-3.5 h-3.5 mr-1 text-primary" />
@@ -272,6 +299,105 @@ export const CustomerDashboard: React.FC = () => {
           onSubmitted={() => setRatingDelivery(null)}
         />
       )}
+      </main>
+      <aside className="hidden md:block bg-white/25 backdrop-blur-md pl-4">
+        {showTutorialAgain ? (
+          <div className="sticky top-20">
+            <Card className="border border-white/40 bg-white/35 backdrop-blur-xl shadow-card animate-fade-in">
+              <CardContent className="p-4 space-y-3">
+                <div className="flex items-start justify-between gap-2">
+                  <Badge variant="primary" className="text-[10px] uppercase font-bold">{currentTutorialSlide.badge}</Badge>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowTutorialAgain(false);
+                      setTutorialSlideIndex(0);
+                    }}
+                    className="p-1 rounded-md text-gray-500 hover:text-gray-800 hover:bg-white/60 transition-colors"
+                    aria-label="Close tutorial"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+
+                <div className="w-11 h-11 rounded-xl bg-blue-50 flex items-center justify-center text-primary ring-2 ring-blue-100/60">
+                  <CurrentTutorialIcon className="w-5 h-5" />
+                </div>
+
+                <div className="space-y-1.5 min-h-[88px]">
+                  <h3 className="text-sm font-bold text-gray-900">{currentTutorialSlide.title}</h3>
+                  <p className="text-xs text-muted leading-relaxed">
+                    {currentTutorialSlide.description}
+                  </p>
+                </div>
+
+                <div className="flex items-center justify-center gap-1">
+                  {customerTutorialSlides.map((_, idx) => (
+                    <span
+                      key={idx}
+                      className={`h-1.5 rounded-full transition-all ${
+                        idx === tutorialSlideIndex ? 'w-5 bg-primary' : 'w-1.5 bg-gray-300'
+                      }`}
+                    />
+                  ))}
+                </div>
+
+                <div className="flex items-center justify-between pt-1 border-t border-gray-100">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setShowTutorialAgain(false);
+                      setTutorialSlideIndex(0);
+                    }}
+                    className="text-[11px] text-muted"
+                  >
+                    Skip Tutorial
+                  </Button>
+
+                  <div className="flex items-center gap-1.5">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      disabled={tutorialSlideIndex === 0}
+                      onClick={() => setTutorialSlideIndex((prev) => Math.max(0, prev - 1))}
+                    >
+                      <ArrowLeft className="w-3.5 h-3.5" />
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="primary"
+                      size="sm"
+                      onClick={() => {
+                        if (tutorialSlideIndex === customerTutorialSlides.length - 1) {
+                          setShowTutorialAgain(false);
+                          setTutorialSlideIndex(0);
+                          return;
+                        }
+                        setTutorialSlideIndex((prev) => Math.min(customerTutorialSlides.length - 1, prev + 1));
+                      }}
+                      className="text-[11px] font-bold"
+                    >
+                      {tutorialSlideIndex === customerTutorialSlides.length - 1 ? (
+                        'Get Started'
+                      ) : (
+                        <>
+                          <span>Next</span>
+                          <ArrowRight className="w-3.5 h-3.5 ml-1" />
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        ) : (
+          <div aria-hidden="true" />
+        )}
+      </aside>
     </div>
   );
 };

@@ -107,7 +107,7 @@ export const AdminSapSync: React.FC = () => {
           variant="primary"
           onClick={handleManualSync}
           isLoading={isSyncing}
-          className="font-bold text-xs shadow-purple"
+          className="font-bold text-xs shadow-sm"
         >
           <RefreshCw className="w-4 h-4 mr-1.5" />
           Trigger Manual Sync
@@ -115,7 +115,7 @@ export const AdminSapSync: React.FC = () => {
       </div>
 
       {/* Adapter Architecture Summary Card */}
-      <Card className="border border-primary/20 bg-gradient-to-r from-purple-50/60 to-white shadow-card">
+      <Card className="border border-blue-200/60 bg-blue-50/60 shadow-sm">
         <CardContent className="p-5 space-y-3">
           <div className="flex items-start gap-3">
             <div className="p-2.5 rounded-xl bg-primary text-white flex-shrink-0">
@@ -125,8 +125,8 @@ export const AdminSapSync: React.FC = () => {
               <h3 className="text-sm font-bold text-gray-900">Adapter Pattern Architecture (Zero-Cost Compliance)</h3>
               <p className="text-xs text-gray-700 mt-1 leading-relaxed">
                 As required by §9 of the competition specification, this application implements an abstracted{' '}
-                <code className="text-xs bg-purple-100 text-purple-900 px-1 py-0.5 rounded font-mono">SapBydClient</code> interface.
-                In production, simply set <code className="text-xs bg-purple-100 text-purple-900 px-1 py-0.5 rounded font-mono">VITE_SAP_BYD_USE_MOCK=false</code> to connect the live OData v2 client without altering any core logic.
+                <code className="text-xs bg-blue-100 text-blue-900 px-1 py-0.5 rounded font-mono">SapBydClient</code> interface.
+                In production, simply set <code className="text-xs bg-blue-100 text-blue-900 px-1 py-0.5 rounded font-mono">VITE_SAP_BYD_USE_MOCK=false</code> to connect the live OData v2 client without altering any core logic.
               </p>
             </div>
           </div>
@@ -156,7 +156,7 @@ export const AdminSapSync: React.FC = () => {
                   onClick={() => setSelectedRawPayload(order)}
                   className={`p-3.5 rounded-xl border cursor-pointer transition-all ${
                     isSelected
-                      ? 'bg-purple-50 border-primary text-primary shadow-sm'
+                      ? 'bg-blue-50 border-blue-700 text-blue-700 shadow-sm'
                       : 'bg-white border-gray-200 hover:border-primary/40 text-gray-800'
                   }`}
                 >
@@ -170,7 +170,7 @@ export const AdminSapSync: React.FC = () => {
                     <p className="font-semibold text-gray-900">{order.destination.recipientName}</p>
                     <p className="text-[11px] text-muted truncate">{order.destination.streetAddress}</p>
                   </div>
-                  <div className="text-[11px] text-purple-700 font-semibold mt-1">
+                  <div className="text-[11px] text-blue-700 font-semibold mt-1">
                     Weight: {order.note.grossWeightKg} kg • {order.note.items.length} items
                   </div>
                 </div>
@@ -194,7 +194,7 @@ export const AdminSapSync: React.FC = () => {
           </CardHeader>
 
           <CardContent className="p-3 flex-1">
-            <pre className="h-96 rounded-xl bg-[#181326] text-purple-200 text-xs p-4 overflow-auto font-mono border border-primary/20">
+            <pre className="h-96 rounded-xl bg-slate-900 text-blue-100 text-xs p-4 overflow-auto font-mono border border-blue-200/30">
               {selectedRawPayload
                 ? JSON.stringify(selectedRawPayload, null, 2)
                 : '// Select an order on the left to inspect raw payload'}
@@ -227,7 +227,7 @@ export const AdminSapSync: React.FC = () => {
                   <td className="py-3 px-4 font-mono text-[11px]">{formatDateTime(log.timestamp)}</td>
                   <td className="py-3 px-4">{log.mode}</td>
                   <td className="py-3 px-4 font-bold text-gray-900">{log.ordersImported} Orders</td>
-                  <td className="py-3 px-4 font-mono text-[11px] text-purple-700">
+                  <td className="py-3 px-4 font-mono text-[11px] text-blue-700">
                     {log.docIds.join(', ')}
                   </td>
                   <td className="py-3 px-4 text-right">

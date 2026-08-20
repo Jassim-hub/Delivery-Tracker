@@ -38,7 +38,7 @@ const RIDER_SLIDES: Slide[] = [
     description: 'Toggle your online status to receive new order assignments. Review pickup details, notes, and accept orders with one tap.',
     icon: Bike,
     badge: 'Step 1: Dispatch Queue',
-    color: 'bg-purple-100 text-purple-700',
+    color: 'bg-blue-100 text-blue-700',
   },
   {
     title: 'Handover Acknowledgement',
@@ -69,7 +69,7 @@ const CUSTOMER_SLIDES: Slide[] = [
     description: 'Watch your rider approach in real time on an interactive live map with precise ETA countdowns and visual status progression.',
     icon: MapPin,
     badge: 'Live Tracking',
-    color: 'bg-purple-100 text-purple-700',
+    color: 'bg-blue-100 text-blue-700',
   },
   {
     title: 'Direct Rider Communication',
@@ -93,7 +93,7 @@ const ADMIN_SLIDES: Slide[] = [
     description: 'Monitor all online riders, active deliveries, and real-time transit telemetry on a unified operations map.',
     icon: Shield,
     badge: 'Fleet Command',
-    color: 'bg-purple-100 text-purple-700',
+    color: 'bg-blue-100 text-blue-700',
   },
   {
     title: 'SAP ByD ERP Integration',
@@ -167,7 +167,7 @@ export const OnboardingCarousel: React.FC<OnboardingCarouselProps> = ({
         </span>
 
         {/* Animated Slide Icon */}
-        <div className="w-16 h-16 rounded-2xl bg-purple-50 flex items-center justify-center mb-4 text-primary shadow-sm ring-4 ring-purple-100/50">
+        <div className="w-16 h-16 rounded-2xl bg-blue-50 flex items-center justify-center mb-4 text-blue-700 shadow-sm ring-4 ring-blue-100/50">
           <IconComponent className="w-8 h-8 text-primary animate-pulse" />
         </div>
 

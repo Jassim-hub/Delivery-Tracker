@@ -48,19 +48,19 @@ export const AdminTvDisplay: React.FC = () => {
   const deliveredList = deliveries.filter((d) => d.status === 'delivered');
 
   return (
-    <div className="min-h-screen bg-[#0E0A17] text-white p-6 select-none flex flex-col justify-between">
+    <div className="min-h-screen bg-slate-950 text-white p-6 select-none flex flex-col justify-between">
       {/* Wallboard Header */}
-      <div className="flex items-center justify-between pb-4 border-b border-purple-900/50">
+      <div className="flex items-center justify-between pb-4 border-b border-blue-900/50">
         <div className="flex items-center gap-4">
           <button
             onClick={() => navigate('/admin')}
-            className="p-2.5 rounded-xl bg-purple-900/40 hover:bg-purple-800 text-purple-200 transition-all"
+            className="p-2.5 rounded-xl bg-blue-900/40 hover:bg-blue-800 text-blue-100 transition-all"
             title="Exit TV Board"
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center font-black text-accent text-lg shadow-purple">
+            <div className="w-10 h-10 rounded-xl bg-blue-700 flex items-center justify-center font-black text-accent text-lg shadow-sm">
               DT
             </div>
             <div>
@@ -70,7 +70,7 @@ export const AdminTvDisplay: React.FC = () => {
                   LIVE TELEMETRY
                 </span>
               </h1>
-              <p className="text-xs text-purple-300 font-mono">
+              <p className="text-xs text-blue-100 font-mono">
                 Kampala Central Logistics Operations Hub • SAP ByD Sync Active
               </p>
             </div>
@@ -82,7 +82,7 @@ export const AdminTvDisplay: React.FC = () => {
           <div className="text-3xl font-black text-accent tracking-widest">
             {currentTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
           </div>
-          <div className="text-xs text-purple-300">
+          <div className="text-xs text-blue-100">
             {currentTime.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}
           </div>
         </div>
@@ -90,34 +90,34 @@ export const AdminTvDisplay: React.FC = () => {
 
       {/* KPI Stats Ticker */}
       <div className="grid grid-cols-4 gap-4 my-4">
-        <div className="bg-[#181228] p-4 rounded-2xl border border-purple-800/40 shadow-lg">
-          <div className="flex items-center justify-between text-xs font-mono text-purple-300 uppercase">
+        <div className="bg-slate-900 p-4 rounded-2xl border border-blue-800/40 shadow-lg">
+          <div className="flex items-center justify-between text-xs font-mono text-blue-100 uppercase">
             <span>Online Riders</span>
             <Bike className="w-5 h-5 text-accent" />
           </div>
           <div className="text-4xl font-black text-white mt-1">
-            {onlineRiders.length} <span className="text-sm font-normal text-purple-400">/ {riders.length}</span>
+            {onlineRiders.length} <span className="text-sm font-normal text-blue-300">/ {riders.length}</span>
           </div>
         </div>
 
-        <div className="bg-[#181228] p-4 rounded-2xl border border-purple-800/40 shadow-lg">
-          <div className="flex items-center justify-between text-xs font-mono text-purple-300 uppercase">
+        <div className="bg-slate-900 p-4 rounded-2xl border border-blue-800/40 shadow-lg">
+          <div className="flex items-center justify-between text-xs font-mono text-blue-100 uppercase">
             <span>Active In-Transit</span>
-            <Truck className="w-5 h-5 text-purple-400" />
+            <Truck className="w-5 h-5 text-blue-300" />
           </div>
           <div className="text-4xl font-black text-accent mt-1">{inTransitDeliveries.length}</div>
         </div>
 
-        <div className="bg-[#181228] p-4 rounded-2xl border border-purple-800/40 shadow-lg">
-          <div className="flex items-center justify-between text-xs font-mono text-purple-300 uppercase">
+        <div className="bg-slate-900 p-4 rounded-2xl border border-blue-800/40 shadow-lg">
+          <div className="flex items-center justify-between text-xs font-mono text-blue-100 uppercase">
             <span>Pending Dispatch</span>
             <Clock className="w-5 h-5 text-amber-400" />
           </div>
           <div className="text-4xl font-black text-amber-400 mt-1">{pendingDeliveries.length}</div>
         </div>
 
-        <div className="bg-[#181228] p-4 rounded-2xl border border-purple-800/40 shadow-lg">
-          <div className="flex items-center justify-between text-xs font-mono text-purple-300 uppercase">
+        <div className="bg-slate-900 p-4 rounded-2xl border border-blue-800/40 shadow-lg">
+          <div className="flex items-center justify-between text-xs font-mono text-blue-100 uppercase">
             <span>Completed Today</span>
             <CheckCircle2 className="w-5 h-5 text-emerald-400" />
           </div>
@@ -128,19 +128,19 @@ export const AdminTvDisplay: React.FC = () => {
       {/* Main Wallboard Center: Map + Live Active Dispatches */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 flex-1 my-2">
         {/* Large Central Ops Map */}
-        <div className="lg:col-span-2 bg-[#140F22] rounded-3xl border border-purple-800/40 p-4 flex flex-col">
+        <div className="lg:col-span-2 bg-slate-950 rounded-3xl border border-blue-800/40 p-4 flex flex-col">
           <div className="flex items-center justify-between pb-3">
             <span className="text-xs font-mono font-bold text-accent uppercase tracking-wider flex items-center gap-1.5">
               <Activity className="w-4 h-4 text-emerald-400 animate-pulse" />
               Real-Time GPS Fleet Radar
             </span>
-            <span className="text-xs text-purple-300 font-mono">12s Broadcast Pulse</span>
+            <span className="text-xs text-blue-100 font-mono">12s Broadcast Pulse</span>
           </div>
 
-          <div className="relative flex-1 rounded-2xl bg-[#0E0A17] overflow-hidden border border-purple-900/60">
+          <div className="relative flex-1 rounded-2xl bg-slate-950 overflow-hidden border border-blue-900/60">
             <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
               <pattern id="tvGrid" width="6" height="6" patternUnits="userSpaceOnUse">
-                <path d="M 6 0 L 0 0 0 6" fill="none" stroke="rgba(75, 37, 134, 0.2)" strokeWidth="0.5" />
+                <path d="M 6 0 L 0 0 0 6" fill="none" stroke="rgba(29, 78, 216, 0.2)" strokeWidth="0.5" />
               </pattern>
               <rect width="100%" height="100%" fill="url(#tvGrid)" />
 
@@ -162,14 +162,14 @@ export const AdminTvDisplay: React.FC = () => {
 
               {/* Destination Hubs */}
               <g transform="translate(75, 25)">
-                <circle r="3" fill="#8A62D2" stroke="#FFFFFF" strokeWidth="0.8" />
-                <text y="-4" fontSize="2.8" fill="#E6DCF6" textAnchor="middle">
+                <circle r="3" fill="#60A5FA" stroke="#FFFFFF" strokeWidth="0.8" />
+                <text y="-4" fontSize="2.8" fill="#DBEAFE" textAnchor="middle">
                   Kololo Hub
                 </text>
               </g>
               <g transform="translate(25, 75)">
-                <circle r="3" fill="#8A62D2" stroke="#FFFFFF" strokeWidth="0.8" />
-                <text y="6" fontSize="2.8" fill="#E6DCF6" textAnchor="middle">
+                <circle r="3" fill="#60A5FA" stroke="#FFFFFF" strokeWidth="0.8" />
+                <text y="6" fontSize="2.8" fill="#DBEAFE" textAnchor="middle">
                   Central Hub
                 </text>
               </g>
@@ -178,7 +178,7 @@ export const AdminTvDisplay: React.FC = () => {
         </div>
 
         {/* Live Delivery Stream Board */}
-        <div className="bg-[#140F22] rounded-3xl border border-purple-800/40 p-4 flex flex-col space-y-3">
+        <div className="bg-slate-950 rounded-3xl border border-blue-800/40 p-4 flex flex-col space-y-3">
           <span className="text-xs font-mono font-bold text-accent uppercase tracking-wider">
             Active Deliveries Board
           </span>
@@ -187,7 +187,7 @@ export const AdminTvDisplay: React.FC = () => {
             {deliveries.slice(0, 5).map((del) => (
               <div
                 key={del.id}
-                className="p-3 rounded-2xl bg-[#1D172E] border border-purple-900/60 space-y-1.5"
+                className="p-3 rounded-2xl bg-slate-900 border border-blue-900/60 space-y-1.5"
               >
                 <div className="flex items-center justify-between">
                   <span className="font-mono text-xs font-bold text-accent">#{del.order_reference}</span>
@@ -197,7 +197,7 @@ export const AdminTvDisplay: React.FC = () => {
                         ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
                         : del.status === 'delivered'
                         ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-                        : 'bg-purple-500/20 text-purple-300 border border-purple-500/30'
+                        : 'bg-blue-500/20 text-blue-100 border border-blue-500/30'
                     }`}
                   >
                     {del.status.replace('_', ' ')}
@@ -206,7 +206,7 @@ export const AdminTvDisplay: React.FC = () => {
 
                 <p className="text-xs font-semibold text-white truncate">{del.dropoff_address}</p>
 
-                <div className="flex items-center justify-between text-[11px] text-purple-300 pt-1 border-t border-purple-900/40 font-mono">
+                <div className="flex items-center justify-between text-[11px] text-blue-100 pt-1 border-t border-blue-900/40 font-mono">
                   <span>Rider: {del.rider?.full_name || 'Unassigned'}</span>
                   <span>{formatTimeOnly(del.created_at)}</span>
                 </div>
@@ -217,7 +217,7 @@ export const AdminTvDisplay: React.FC = () => {
       </div>
 
       {/* Footer Status Bar */}
-      <div className="pt-3 border-t border-purple-900/40 flex items-center justify-between text-xs text-purple-300 font-mono">
+      <div className="pt-3 border-t border-blue-900/40 flex items-center justify-between text-xs text-blue-100 font-mono">
         <span>Delivery Tracker Pro • Unattended Display Mode</span>
         <span className="flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />

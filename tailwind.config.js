@@ -9,18 +9,26 @@ export default {
     extend: {
       colors: {
         primary: {
-          DEFAULT: '#4B2586',
-          50: '#F4F0FB',
-          100: '#E6DCF6',
-          200: '#CBB8EC',
-          300: '#AF95E2',
-          400: '#8A62D2',
-          500: '#6437B7',
-          600: '#4B2586',
-          700: '#3A1B6B',
-          800: '#2B1351',
-          900: '#1D0C37',
+          DEFAULT: '#0284C7',
+          50: '#F0F9FF',
+          100: '#E0F2FE',
+          200: '#BAE6FD',
+          300: '#7DD3FC',
+          400: '#38BDF8',
+          500: '#0EA5E9',
+          600: '#0284C7',
+          700: '#0369A1',
+          800: '#075985',
+          900: '#0C4A6E',
           foreground: '#FFFFFF',
+        },
+        text: {
+          heading: '#111827',
+          body: '#374151',
+        },
+        glass: {
+          card: 'rgba(255,255,255,0.06)',
+          nav: 'rgba(255,255,255,0.05)',
         },
         accent: {
           DEFAULT: '#F5A623',
@@ -30,18 +38,18 @@ export default {
           foreground: '#1A1A1A',
         },
         page: {
-          bg: '#EEF0FB',
+          bg: '#FFF7ED',
         },
         surface: {
           DEFAULT: '#FFFFFF',
           muted: '#F8F9FE',
           card: '#FFFFFF',
-          dark: '#1E192B',
+          dark: '#9A3412',
         },
         darkbg: {
-          DEFAULT: '#140F22',
-          card: '#1D172E',
-          border: '#2E2646',
+          DEFAULT: '#9A3412',
+          card: '#C2410C',
+          border: '#EA580C',
         },
         brand: {
           success: '#1E9E64',
@@ -63,10 +71,10 @@ export default {
         '2xl': '24px',
       },
       boxShadow: {
-        card: '0 2px 12px -2px rgba(75, 37, 134, 0.08), 0 1px 4px -1px rgba(0, 0, 0, 0.04)',
-        'card-hover': '0 8px 24px -4px rgba(75, 37, 134, 0.12), 0 3px 8px -2px rgba(0, 0, 0, 0.04)',
+          card: '0 2px 12px -2px rgba(30, 64, 175, 0.08), 0 1px 4px -1px rgba(0, 0, 0, 0.04)',
+          'card-hover': '0 8px 24px -4px rgba(30, 64, 175, 0.12), 0 3px 8px -2px rgba(0, 0, 0, 0.04)',
         gold: '0 4px 14px 0 rgba(245, 166, 35, 0.35)',
-        purple: '0 4px 16px 0 rgba(75, 37, 134, 0.3)',
+          sky: '0 4px 16px 0 rgba(2, 132, 199, 0.3)',
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],

@@ -80,7 +80,7 @@ export const DeliveryTrackingMap: React.FC<DeliveryTrackingMapProps> = ({
 
   return (
     <div
-      className={`relative w-full rounded-2xl overflow-hidden bg-[#181326] border border-primary/20 shadow-card ${className}`}
+      className={`relative w-full rounded-2xl overflow-hidden bg-orange-50 border border-orange-200 shadow-card ${className}`}
       style={{ height }}
     >
       {/* Interactive Map Visualizer */}
@@ -95,21 +95,12 @@ export const DeliveryTrackingMap: React.FC<DeliveryTrackingMapProps> = ({
           <pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse">
             <path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255, 255, 255, 0.05)" strokeWidth="0.5" />
           </pattern>
-          {/* Subtle topography contour lines */}
-          <radialGradient id="mapGlow" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#4B2586" stopOpacity="0.4" />
-            <stop offset="100%" stopColor="#181326" stopOpacity="0.9" />
-          </radialGradient>
-          <linearGradient id="routeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#F5A623" />
-            <stop offset="100%" stopColor="#8A62D2" />
-          </linearGradient>
         </defs>
 
         {/* Map Background */}
-        <rect width="100%" height="100%" fill="#161124" />
+        <rect width="100%" height="100%" fill="#9A3412" />
         <rect width="100%" height="100%" fill="url(#grid)" />
-        <circle cx="50" cy="50" r="45" fill="url(#mapGlow)" />
+        <circle cx="50" cy="50" r="45" fill="#0C4A6E" opacity="0.35" />
 
         {/* Road networks simulation */}
         <path
@@ -131,7 +122,7 @@ export const DeliveryTrackingMap: React.FC<DeliveryTrackingMapProps> = ({
           y1={riderY}
           x2={targetLocation === pickupLocation ? pickupX : dropoffX}
           y2={targetLocation === pickupLocation ? pickupY : dropoffY}
-          stroke="url(#routeGradient)"
+          stroke="#38BDF8"
           strokeWidth="1.8"
           strokeDasharray="2 1.5"
           className="animate-pulse"
@@ -148,9 +139,9 @@ export const DeliveryTrackingMap: React.FC<DeliveryTrackingMapProps> = ({
 
         {/* Dropoff Pin */}
         <g transform={`translate(${dropoffX}, ${dropoffY})`} className="cursor-pointer">
-          <circle r="4" fill="#8A62D2" opacity="0.3" className="animate-ping" />
-          <circle r="2.5" fill="#8A62D2" stroke="#FFFFFF" strokeWidth="0.6" />
-          <text y="-4" fontSize="2.8" fill="#E6DCF6" fontWeight="bold" textAnchor="middle">
+          <circle r="4" fill="#60A5FA" opacity="0.3" className="animate-ping" />
+          <circle r="2.5" fill="#60A5FA" stroke="#FFFFFF" strokeWidth="0.6" />
+          <text y="-4" fontSize="2.8" fill="#DBEAFE" fontWeight="bold" textAnchor="middle">
             Destination
           </text>
         </g>
@@ -169,7 +160,7 @@ export const DeliveryTrackingMap: React.FC<DeliveryTrackingMapProps> = ({
 
       {/* Floating Info Overlay (Distance, ETA & Status) */}
       <div className="absolute top-3 left-3 right-3 flex items-center justify-between gap-2 pointer-events-none">
-        <div className="pointer-events-auto flex items-center gap-2 bg-[#1E1830]/90 backdrop-blur-md px-3.5 py-2 rounded-xl border border-white/10 shadow-lg text-white">
+        <div className="pointer-events-auto flex items-center gap-2 bg-orange-100/95 backdrop-blur-md px-3.5 py-2 rounded-xl border border-orange-300 shadow-lg text-orange-950">
           <div className="flex flex-col">
             <span className="text-[10px] text-accent font-bold uppercase tracking-wider">Live ETA</span>
             <span className="text-sm font-extrabold text-white">

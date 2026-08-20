@@ -32,7 +32,7 @@ import { AdminTvDisplay } from '@/app/routes/admin/AdminTvDisplay';
 // App Layout with standard Navigation bar
 const AppLayout: React.FC = () => {
   return (
-    <div className="min-h-screen flex flex-col bg-page-bg text-gray-900">
+    <div className="min-h-screen flex flex-col bg-sky-50 text-gray-900">
       <Navbar />
       <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
         <Outlet />
@@ -49,7 +49,7 @@ const RoleHomeRedirect: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-page-bg">
+      <div className="min-h-screen flex items-center justify-center bg-sky-50">
         <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin" />
       </div>
     );

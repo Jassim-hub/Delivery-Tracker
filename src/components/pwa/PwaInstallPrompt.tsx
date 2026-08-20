@@ -57,7 +57,7 @@ export const PwaInstallPrompt: React.FC = () => {
   if (!showPrompt) return null;
 
   return (
-    <div className="fixed bottom-16 sm:bottom-4 left-4 right-4 sm:left-auto sm:right-4 max-w-sm z-40 bg-surface border border-primary/20 shadow-purple rounded-2xl p-4 animate-slide-up">
+    <div className="fixed bottom-16 sm:bottom-4 left-4 right-4 sm:left-auto sm:right-4 max-w-sm z-40 bg-white/60 backdrop-blur-sm border border-slate-900/10 shadow-sm rounded-2xl p-4 animate-slide-up">
       <button
         onClick={handleDismiss}
         className="absolute top-3 right-3 text-gray-400 hover:text-gray-700 p-1"
@@ -77,7 +77,7 @@ export const PwaInstallPrompt: React.FC = () => {
           </p>
 
           {isIosDevice ? (
-            <div className="mt-2.5 p-2 rounded-lg bg-purple-50 text-[10px] text-purple-900 flex items-center gap-1.5 font-medium">
+            <div className="mt-2.5 p-2 rounded-lg bg-blue-50 text-[10px] text-blue-900 flex items-center gap-1.5 font-medium">
               <span>Tap</span>
               <Share className="w-3.5 h-3.5 text-primary" />
               <span>then</span>

@@ -69,7 +69,7 @@ export const RatingModal: React.FC<RatingModalProps> = ({
         particleCount: 70,
         spread: 60,
         origin: { y: 0.6 },
-        colors: ['#4B2586', '#F5A623', '#1E9E64'],
+        colors: ['#1D4ED8', '#F5A623', '#1E9E64'],
       });
     } catch {
       // ignore
@@ -90,7 +90,7 @@ export const RatingModal: React.FC<RatingModalProps> = ({
     >
       <form onSubmit={handleSubmit} className="space-y-4 pt-2">
         {/* Rider Profile Highlight */}
-        <div className="flex items-center gap-3 p-3 rounded-xl bg-purple-50/70 border border-purple-100">
+        <div className="flex items-center gap-3 p-3 rounded-xl bg-blue-50/70 border border-blue-100">
           <div className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm">
             {riderName.charAt(0)}
           </div>

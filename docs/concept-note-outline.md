@@ -28,7 +28,7 @@ Engineered to **strict $0 budget constraints**, the architecture leverages free-
 - **Smart GPS Telemetry Throttling:** Strict client-side algorithm limiting location writes to $\ge 12\text{s}$ elapsed time or $\ge 25\text{m}$ physical displacement to prevent quota exhaustion and database bloat.
 
 #### 2.2 UI/UX Quality of the Prototype (30% Weighting)
-- **Cohesive Brand Design System:** Clean card-based design with custom CSS tokens translating the flyer palette (`#4B2586` Deep Purple, `#F5A623` Gold Accent, `#EEF0FB` Soft Lavender) into a modern, accessible interface with WCAG AA contrast compliance.
+- **Cohesive Brand Design System:** Clean card-based design with custom CSS tokens translating the flyer palette (`#0284C7` Sky Blue, `#F5A623` Gold Accent, `#F0F9FF` Soft Sky) into a modern, accessible interface with WCAG AA contrast compliance.
 - **Role-Aware Interactive Experiences:** Seamless switching across Rider, Customer, and Admin personas with a floating evaluator switcher widget.
 - **Interactive Onboarding Guides:** Lightweight, accessible 4-slide carousels introducing each persona to their respective workflows.
 - **Unattended TV Wallboard Mode:** Dedicated `/admin/tv-display` route optimized for warehouse wall screens with large typography and real-time radar clocks.

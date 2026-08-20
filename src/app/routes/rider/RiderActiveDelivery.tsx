@@ -121,7 +121,7 @@ export const RiderActiveDelivery: React.FC = () => {
 
     ctx.lineWidth = 2.5;
     ctx.lineCap = 'round';
-    ctx.strokeStyle = '#4B2586';
+    ctx.strokeStyle = '#1D4ED8';
     ctx.lineTo(clientX - rect.left, clientY - rect.top);
     ctx.stroke();
     setHasSignature(true);
@@ -197,7 +197,7 @@ export const RiderActiveDelivery: React.FC = () => {
             {delivery.order_reference}
           </Badge>
           {delivery.sap_byd_document_id && (
-            <Badge variant="outline" className="text-[10px] text-purple-700 border-purple-200">
+            <Badge variant="outline" className="text-[10px] text-blue-700 border-blue-200">
               SAP ByD: {delivery.sap_byd_document_id}
             </Badge>
           )}
@@ -228,7 +228,7 @@ export const RiderActiveDelivery: React.FC = () => {
       />
 
       {/* Live GPS Broadcast Status Banner */}
-      <div className="flex items-center justify-between px-3.5 py-2 rounded-xl bg-purple-50 border border-purple-100 text-[11px] text-primary">
+          <div className="flex items-center justify-between px-3.5 py-2 rounded-xl bg-blue-50 border border-blue-100 text-[11px] text-blue-700">
         <div className="flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
           <span className="font-semibold">Live GPS Broadcast Active</span>
@@ -263,7 +263,7 @@ export const RiderActiveDelivery: React.FC = () => {
 
           {/* Recipient Details & Click-to-Call Buttons */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-            <div className="p-3 rounded-xl bg-gray-50 border border-gray-100 flex items-center justify-between">
+            <div className="p-3 rounded-xl bg-orange-50 border border-orange-200 flex items-center justify-between">
               <div>
                 <div className="text-[10px] font-bold text-muted uppercase">Customer / Recipient</div>
                 <div className="text-xs font-bold text-gray-900">{delivery.customer?.full_name || 'Customer'}</div>
@@ -286,7 +286,7 @@ export const RiderActiveDelivery: React.FC = () => {
               </div>
               <a
                 href="tel:+256700112233"
-                className="p-2.5 rounded-xl bg-primary hover:bg-primary-700 text-white shadow-sm transition-all active:scale-95"
+                className="p-2.5 rounded-xl bg-orange-500 hover:bg-orange-600 text-white shadow-sm transition-all active:scale-95"
                 title="Call Dispatch"
               >
                 <PhoneCall className="w-4 h-4" />
@@ -373,7 +373,7 @@ export const RiderActiveDelivery: React.FC = () => {
               <Button
                 variant="primary"
                 onClick={() => setShowOnBehalfModal(true)}
-                className="w-full font-bold text-sm py-3 shadow-purple"
+                className="w-full font-bold text-sm py-3 shadow-sm"
               >
                 <PenTool className="w-4 h-4 mr-2 text-accent" />
                 Confirm Receipt on Customer's Behalf (Signature)
@@ -403,9 +403,9 @@ export const RiderActiveDelivery: React.FC = () => {
         maxWidth="md"
       >
         <form onSubmit={handleCompleteHandoverAck} className="space-y-4 pt-2">
-          <div className="p-3 rounded-xl bg-purple-50 border border-purple-100 flex items-center gap-3">
+          <div className="p-3 rounded-xl bg-blue-50 border border-blue-100 flex items-center gap-3">
             <ShieldCheck className="w-6 h-6 text-primary flex-shrink-0" />
-            <p className="text-xs text-purple-900 font-medium">
+            <p className="text-xs text-blue-900 font-medium">
               "I confirm I have physically received and inspected this package in sound condition for delivery."
             </p>
           </div>
@@ -472,7 +472,7 @@ export const RiderActiveDelivery: React.FC = () => {
               <button
                 type="button"
                 onClick={clearSignature}
-                className="text-[11px] text-brand-danger hover:underline flex items-center gap-1 font-semibold"
+                className="text-[11px] text-red-600 hover:underline flex items-center gap-1 font-semibold"
               >
                 <RotateCcw className="w-3 h-3" />
                 Clear

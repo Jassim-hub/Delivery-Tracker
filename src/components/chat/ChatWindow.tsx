@@ -65,7 +65,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
   const getRoleIcon = (role?: string) => {
     switch (role) {
       case 'admin':
-        return <Shield className="w-3.5 h-3.5 text-purple-600" />;
+        return <Shield className="w-3.5 h-3.5 text-blue-700" />;
       case 'rider':
         return <Bike className="w-3.5 h-3.5 text-amber-600" />;
       case 'customer':
@@ -76,9 +76,9 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
   };
 
   return (
-    <div className={`flex flex-col h-[480px] bg-white rounded-2xl border border-gray-100 shadow-card overflow-hidden ${className}`}>
+    <div className={`flex flex-col h-[480px] bg-orange-50 rounded-2xl border border-orange-200 shadow-card overflow-hidden ${className}`}>
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-primary to-primary-700 text-white shadow-sm">
+      <div className="flex items-center justify-between px-4 py-3 bg-orange-100 text-orange-950 border-b border-orange-200 shadow-sm">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-full bg-white/20 border border-white/30 flex items-center justify-center font-bold text-sm">
             {recipientName.charAt(0)}
@@ -88,12 +88,12 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
               <span>{recipientName}</span>
               <span className="p-0.5 bg-white rounded-full">{getRoleIcon(recipientRole)}</span>
             </div>
-            <div className="text-[11px] text-purple-200">
+            <div className="text-[11px] text-orange-900">
               {deliveryReference ? `Order: ${deliveryReference}` : 'Active Communication Channel'}
             </div>
           </div>
         </div>
-        <div className="flex items-center gap-1.5 bg-white/10 px-2.5 py-1 rounded-full text-[10px] text-purple-100 font-medium">
+        <div className="flex items-center gap-1.5 bg-orange-200 px-2.5 py-1 rounded-full text-[10px] text-orange-950 font-medium">
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
           <span>Live Realtime</span>
         </div>

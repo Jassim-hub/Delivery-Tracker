@@ -63,7 +63,7 @@ export const RiderChat: React.FC = () => {
             <span>Active Customer {currentDelivery ? `(#${currentDelivery.order_reference})` : ''}</span>
           </TabsTrigger>
           <TabsTrigger value="admin" className="flex items-center gap-1.5 py-2">
-            <Shield className="w-4 h-4 text-purple-600" />
+            <Shield className="w-4 h-4 text-blue-700" />
             <span>Dispatch Control HQ</span>
           </TabsTrigger>
         </TabsList>

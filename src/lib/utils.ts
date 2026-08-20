@@ -54,7 +54,7 @@ export function getStatusBadgeProps(status: string): { bg: string; text: string;
     case 'accepted':
       return { bg: 'bg-indigo-100 border-indigo-200', text: 'text-indigo-800', label: 'Accepted by Rider' };
     case 'picked_up':
-      return { bg: 'bg-purple-100 border-purple-200', text: 'text-purple-800', label: 'Package Picked Up' };
+      return { bg: 'bg-blue-100 border-blue-200', text: 'text-blue-800', label: 'Package Picked Up' };
     case 'in_transit':
       return { bg: 'bg-amber-500 text-white border-amber-600', text: 'text-white', label: 'In Transit 🚚' };
     case 'delivered':

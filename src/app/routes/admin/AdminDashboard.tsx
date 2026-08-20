@@ -62,7 +62,7 @@ export const AdminDashboard: React.FC = () => {
       {user && <OnboardingCarousel role="admin" userId={user.id} />}
 
       {/* Header Banner with TV Display Action */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gradient-to-r from-primary via-primary-700 to-primary-800 text-white p-6 rounded-2xl shadow-purple">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-orange-200 text-gray-900 p-6 rounded-2xl shadow-sm">
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-xl sm:text-2xl font-bold">Dispatch Command Center</h1>
@@ -70,7 +70,7 @@ export const AdminDashboard: React.FC = () => {
               Live Fleet Ops
             </Badge>
           </div>
-          <p className="text-xs text-purple-200 mt-1">
+          <p className="text-xs text-orange-900 mt-1">
             Real-time telemetry, SAP ByD ERP sync status & fleet routing
           </p>
         </div>
@@ -89,7 +89,7 @@ export const AdminDashboard: React.FC = () => {
             variant="outline"
             size="sm"
             onClick={() => navigate('/admin/sap-sync')}
-            className="bg-white/10 border-white/20 text-white hover:bg-white/20 text-xs font-semibold"
+            className="bg-orange-50 border-orange-300 text-orange-900 hover:bg-orange-100 text-xs font-semibold"
           >
             <RefreshCw className="w-3.5 h-3.5 mr-1" />
             SAP ByD Sync
@@ -126,15 +126,15 @@ export const AdminDashboard: React.FC = () => {
           </div>
         </Card>
 
-        <Card className="p-5 shadow-card border-l-4 border-l-purple-500 bg-white">
+        <Card className="p-5 shadow-sm border-l-4 border-l-blue-700 bg-white/50 backdrop-blur-sm">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-muted uppercase">In Transit</span>
-            <Truck className="w-5 h-5 text-purple-600" />
+            <Truck className="w-5 h-5 text-blue-700" />
           </div>
           <div className="text-2xl sm:text-3xl font-black text-gray-900 mt-2">
             {inTransitDeliveries.length}
           </div>
-          <div className="text-[11px] text-purple-700 font-semibold mt-1">
+          <div className="text-[11px] text-blue-700 font-semibold mt-1">
             Live GPS telemetry active
           </div>
         </Card>
@@ -154,9 +154,9 @@ export const AdminDashboard: React.FC = () => {
       </div>
 
       {/* Main Grid: Live Fleet Map & Quick Dispatch */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_320px] gap-0">
         {/* Left 2 Cols: Live Fleet Status & Map */}
-        <div className="lg:col-span-2 space-y-4">
+        <aside className="pr-4 space-y-4">
           <Card className="shadow-card overflow-hidden">
             <CardHeader className="pb-3 border-b border-gray-100 flex flex-row items-center justify-between">
               <div>
@@ -174,7 +174,7 @@ export const AdminDashboard: React.FC = () => {
             </CardHeader>
 
             {/* Simulated Unified Fleet Map */}
-            <div className="relative h-80 bg-[#161124] p-4 text-white overflow-hidden">
+            <div className="relative h-[min(65vh,680px)] min-h-[420px] bg-orange-950 p-4 text-white overflow-hidden">
               <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
                 {/* Grid */}
                 <pattern id="adminGrid" width="8" height="8" patternUnits="userSpaceOnUse">
@@ -183,8 +183,8 @@ export const AdminDashboard: React.FC = () => {
                 <rect width="100%" height="100%" fill="url(#adminGrid)" />
 
                 {/* Major routes */}
-                <path d="M 10 20 Q 50 40 90 30" fill="none" stroke="rgba(75, 37, 134, 0.5)" strokeWidth="1.5" />
-                <path d="M 20 80 Q 50 60 80 90" fill="none" stroke="rgba(75, 37, 134, 0.5)" strokeWidth="1.5" />
+                <path d="M 10 20 Q 50 40 90 30" fill="none" stroke="rgba(29, 78, 216, 0.5)" strokeWidth="1.5" />
+                <path d="M 20 80 Q 50 60 80 90" fill="none" stroke="rgba(29, 78, 216, 0.5)" strokeWidth="1.5" />
 
                 {/* Active Riders on Map */}
                 {riders.map((r, i) => {
@@ -204,9 +204,9 @@ export const AdminDashboard: React.FC = () => {
                 {/* Deliveries on Map */}
                 {deliveries.slice(0, 3).map((d, i) => (
                   <g key={d.id} transform={`translate(${30 + i * 28}, ${45 + i * 15})`}>
-                    <circle r="3" fill="#8A62D2" opacity="0.4" />
-                    <circle r="1.8" fill="#8A62D2" stroke="#FFFFFF" strokeWidth="0.5" />
-                    <text y="4" fontSize="2.4" fill="#E6DCF6" textAnchor="middle">
+                    <circle r="3" fill="#60A5FA" opacity="0.4" />
+                    <circle r="1.8" fill="#60A5FA" stroke="#FFFFFF" strokeWidth="0.5" />
+                    <text y="4" fontSize="2.4" fill="#DBEAFE" textAnchor="middle">
                       📦 #{d.order_reference.slice(-4)}
                     </text>
                   </g>
@@ -218,10 +218,10 @@ export const AdminDashboard: React.FC = () => {
               </div>
             </div>
           </Card>
-        </div>
+        </aside>
 
         {/* Right Col: Quick Dispatch Queue */}
-        <div className="space-y-4">
+        <main className="border-r border-sky-900/15 px-4 space-y-4 bg-white/20 backdrop-blur-sm">
           <Card className="shadow-card">
             <CardHeader className="pb-3 border-b border-gray-100 flex flex-row items-center justify-between">
               <div>
@@ -290,7 +290,8 @@ export const AdminDashboard: React.FC = () => {
               )}
             </CardContent>
           </Card>
-        </div>
+        </main>
+        <aside className="hidden" aria-hidden="true" />
       </div>
     </div>
   );

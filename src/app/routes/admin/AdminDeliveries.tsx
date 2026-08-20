@@ -131,7 +131,9 @@ export const AdminDeliveries: React.FC = () => {
       </div>
 
       {/* Deliveries Data Table */}
-      <Card className="shadow-card overflow-hidden">
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-0">
+      <section className="border-r border-sky-900/15 pr-4 bg-white/25 backdrop-blur-md">
+      <Card className="shadow-sm overflow-hidden bg-white/50 backdrop-blur-sm">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs text-gray-700">
             <thead className="bg-gray-50/80 text-[11px] uppercase tracking-wider text-muted font-bold border-b border-gray-100">
@@ -156,11 +158,11 @@ export const AdminDeliveries: React.FC = () => {
                 filteredDeliveries.map((del) => {
                   const badgeProps = getStatusBadgeProps(del.status);
                   return (
-                    <tr key={del.id} className="hover:bg-purple-50/30 transition-colors">
+                    <tr key={del.id} className="hover:bg-blue-50/30 transition-colors">
                       <td className="py-3 px-4 font-mono font-bold text-primary">
                         #{del.order_reference}
                       </td>
-                      <td className="py-3 px-4 font-mono text-[11px] text-purple-700">
+                      <td className="py-3 px-4 font-mono text-[11px] text-blue-700">
                         {del.sap_byd_document_id || '--'}
                       </td>
                       <td className="py-3 px-4 max-w-xs truncate font-medium text-gray-900">
@@ -204,6 +206,9 @@ export const AdminDeliveries: React.FC = () => {
           </table>
         </div>
       </Card>
+      </section>
+      <section className="pl-4 bg-white/25 backdrop-blur-md" aria-hidden="true" />
+      </div>
 
       {/* Delivery Detail Drawer Modal */}
       {selectedDelivery && (
@@ -216,7 +221,7 @@ export const AdminDeliveries: React.FC = () => {
         >
           <div className="space-y-4 pt-2">
             {/* Status & ERP Pill */}
-            <div className="flex flex-wrap items-center justify-between gap-2 p-3 bg-purple-50 rounded-xl">
+            <div className="flex flex-wrap items-center justify-between gap-2 p-3 bg-blue-50 rounded-xl">
               <div className="flex items-center gap-2">
                 <span className="text-xs font-bold text-gray-700">Status:</span>
                 <Badge variant="accent" className="capitalize text-xs font-bold">

@@ -34,11 +34,11 @@ export const SignupPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-page-bg">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-sky-50">
       <div className="w-full max-w-md space-y-5 animate-fade-in">
         {/* Brand Header */}
         <div className="text-center space-y-2">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-primary text-accent text-2xl font-black shadow-purple">
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-blue-700 text-accent text-2xl font-black shadow-sm">
             DT
           </div>
           <h1 className="text-2xl font-black text-primary">Create Delivery Account</h1>
@@ -66,7 +66,7 @@ export const SignupPage: React.FC = () => {
                   onClick={() => setRole('rider')}
                   className={`p-3 rounded-xl border flex flex-col items-center gap-1 transition-all ${
                     role === 'rider'
-                      ? 'border-primary bg-purple-50 text-primary font-bold shadow-sm'
+                      ? 'border-blue-700 bg-blue-50 text-blue-700 font-bold shadow-sm'
                       : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
                   }`}
                 >
@@ -79,7 +79,7 @@ export const SignupPage: React.FC = () => {
                   onClick={() => setRole('customer')}
                   className={`p-3 rounded-xl border flex flex-col items-center gap-1 transition-all ${
                     role === 'customer'
-                      ? 'border-primary bg-purple-50 text-primary font-bold shadow-sm'
+                      ? 'border-blue-700 bg-blue-50 text-blue-700 font-bold shadow-sm'
                       : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
                   }`}
                 >
@@ -116,7 +116,7 @@ export const SignupPage: React.FC = () => {
               required
             />
 
-            <div className="p-3 rounded-xl bg-purple-50 text-[11px] text-purple-900">
+            <div className="p-3 rounded-xl bg-blue-50 text-[11px] text-blue-900">
               ℹ️ <strong>Security Notice:</strong> Admin dispatcher accounts cannot be created via self-service and are restricted to database seed credentials per §6.
             </div>
 
@@ -124,7 +124,7 @@ export const SignupPage: React.FC = () => {
               type="submit"
               variant="primary"
               isLoading={isLoading}
-              className="w-full font-bold text-xs py-3 mt-2 shadow-purple"
+              className="w-full font-bold text-xs py-3 mt-2 shadow-sm"
             >
               <CheckCircle2 className="w-3.5 h-3.5 mr-1" />
               Complete Registration & Start

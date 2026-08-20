@@ -85,62 +85,16 @@ export const RiderDashboard: React.FC = () => {
   };
 
   return (
-    <div className="space-y-5 pb-12">
-      {user && <OnboardingCarousel role="rider" userId={user.id} />}
+    <div className="grid grid-cols-1 md:grid-cols-[240px_minmax(0,1fr)_240px] gap-0 space-y-5 pb-12">
+      <aside className="border-r border-sky-900/15 pr-4 bg-white/25 backdrop-blur-md min-h-full">
+        {user && <OnboardingCarousel role="rider" userId={user.id} />}
+      </aside>
 
-      {/* Rider Status Bar Card */}
-      <div className="rounded-2xl bg-gradient-to-r from-primary via-primary-700 to-primary-800 text-white p-5 shadow-purple">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-3.5">
-            <div className="relative">
-              <img
-                src={user?.avatar_url || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150'}
-                alt={user?.full_name}
-                className="w-14 h-14 rounded-2xl object-cover border-2 border-white/40 shadow-sm"
-              />
-              <span
-                className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-primary ${
-                  riderInfo?.is_online ? 'bg-emerald-400' : 'bg-gray-400'
-                }`}
-              />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h2 className="text-xl font-bold">{user?.full_name}</h2>
-                <Badge variant="accent" className="text-[10px] py-0 px-2 font-bold">
-                  ★ {riderInfo?.avg_rating || '5.0'}
-                </Badge>
-              </div>
-              <p className="text-xs text-purple-200 mt-0.5">
-                {riderInfo?.vehicle_type || 'Motorcycle'} • Plate: {riderInfo?.license_plate || 'UFE 234X'}
-              </p>
-              <p className="text-[11px] text-purple-300">
-                Completed Deliveries: <span className="font-bold text-white">{riderInfo?.total_deliveries || 0}</span>
-              </p>
-            </div>
-          </div>
-
-          {/* Online / Offline Toggle */}
-          <div className="flex items-center gap-3">
-            <button
-              onClick={toggleOnline}
-              disabled={isUpdatingStatus}
-              className={`flex items-center gap-2.5 px-5 py-2.5 rounded-xl font-bold text-xs transition-all shadow-md active:scale-95 ${
-                riderInfo?.is_online
-                  ? 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-emerald-900/30'
-                  : 'bg-white/20 hover:bg-white/30 text-white'
-              }`}
-            >
-              <Power className="w-4 h-4" />
-              <span>{riderInfo?.is_online ? 'YOU ARE ONLINE' : 'YOU ARE OFFLINE'}</span>
-            </button>
-          </div>
-        </div>
-      </div>
+      <main className="pl-4 md:pl-6 md:border-r border-sky-900/15">
 
       {/* Active Delivery Alert Banner (If in progress) */}
       {activeDelivery && (
-        <Card className="border-2 border-accent bg-amber-50/50 shadow-gold">
+        <Card className="border-2 border-orange-300 bg-orange-100 shadow-sm">
           <CardContent className="p-5">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div className="space-y-1.5">
@@ -228,7 +182,7 @@ export const RiderDashboard: React.FC = () => {
                       variant="outline"
                       size="sm"
                       onClick={() => handleDeclineDelivery(del.id)}
-                      className="text-xs text-brand-danger hover:bg-red-50 hover:text-red-700"
+                      className="text-xs text-red-700 hover:bg-red-50 hover:text-red-700"
                     >
                       <XCircle className="w-3.5 h-3.5 mr-1" />
                       Decline
@@ -275,7 +229,7 @@ export const RiderDashboard: React.FC = () => {
                     <p><strong className="text-gray-700">To:</strong> {del.dropoff_address}</p>
                     {del.sap_byd_document_id && (
                       <p className="text-[11px] text-muted flex items-center gap-1">
-                        <FileText className="w-3 h-3 text-purple-600" />
+                        <FileText className="w-3 h-3 text-blue-700" />
                         <span>SAP ByD: {del.sap_byd_document_id}</span>
                       </p>
                     )}
@@ -332,6 +286,58 @@ export const RiderDashboard: React.FC = () => {
           <span>Ratings</span>
         </button>
       </div>
+      </main>
+      <aside className="hidden md:block bg-white/25 backdrop-blur-md pl-4">
+        {/* Rider Status Bar Card */}
+        <div className="rounded-2xl bg-orange-200 text-gray-900 p-5 shadow-sm">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-3.5">
+              <div className="relative">
+                <img
+                  src={user?.avatar_url || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150'}
+                  alt={user?.full_name}
+                  className="w-14 h-14 rounded-2xl object-cover border-2 border-white/40 shadow-sm"
+                />
+                <span
+                  className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-primary ${
+                    riderInfo?.is_online ? 'bg-emerald-400' : 'bg-gray-400'
+                  }`}
+                />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h2 className="text-xl font-bold">{user?.full_name}</h2>
+                  <Badge variant="accent" className="text-[10px] py-0 px-2 font-bold">
+                    ★ {riderInfo?.avg_rating || '5.0'}
+                  </Badge>
+                </div>
+                <p className="text-xs text-orange-900 mt-0.5">
+                  {riderInfo?.vehicle_type || 'Motorcycle'} • Plate: {riderInfo?.license_plate || 'UFE 234X'}
+                </p>
+                <p className="text-[11px] text-orange-900">
+                  Completed Deliveries: <span className="font-bold text-gray-900">{riderInfo?.total_deliveries || 0}</span>
+                </p>
+              </div>
+            </div>
+
+            {/* Online / Offline Toggle */}
+            <div className="flex items-center gap-3">
+              <button
+                onClick={toggleOnline}
+                disabled={isUpdatingStatus}
+                className={`flex items-center gap-2.5 px-5 py-2.5 rounded-xl font-bold text-xs transition-all shadow-md active:scale-95 ${
+                  riderInfo?.is_online
+                    ? 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-emerald-900/30'
+                    : 'bg-orange-50 hover:bg-orange-100 text-orange-900'
+                }`}
+              >
+                <Power className="w-4 h-4" />
+                <span>{riderInfo?.is_online ? 'YOU ARE ONLINE' : 'YOU ARE OFFLINE'}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </aside>
     </div>
   );
 };

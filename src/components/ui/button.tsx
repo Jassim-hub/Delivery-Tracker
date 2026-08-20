@@ -9,15 +9,15 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant = 'primary', size = 'md', isLoading = false, children, disabled, ...props }, ref) => {
-    const baseStyles = 'inline-flex items-center justify-center font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none active:scale-[0.98]';
+    const baseStyles = 'inline-flex items-center justify-center font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none active:scale-[0.98]';
     
     const variants = {
-      primary: 'bg-primary text-white hover:bg-primary-700 shadow-sm hover:shadow-purple border border-transparent',
+      primary: 'bg-blue-700 text-white hover:bg-blue-800 shadow-sm border border-transparent',
       accent: 'bg-accent text-gray-900 font-bold hover:bg-accent-hover shadow-sm hover:shadow-gold border border-transparent',
       outline: 'border border-gray-200 bg-white hover:bg-page-bg text-gray-800 shadow-sm',
-      ghost: 'bg-transparent hover:bg-primary/10 text-gray-700 hover:text-primary',
-      danger: 'bg-brand-danger text-white hover:bg-red-700 shadow-sm border border-transparent',
-      success: 'bg-brand-success text-white hover:bg-emerald-700 shadow-sm border border-transparent',
+      ghost: 'bg-transparent hover:bg-blue-50 text-gray-700 hover:text-blue-700',
+      danger: 'bg-red-600 text-white hover:bg-red-700 shadow-sm border border-transparent',
+      success: 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm border border-transparent',
     };
 
     const sizes = {

@@ -266,7 +266,7 @@ export const CustomerDashboard: React.FC = () => {
           onClose={() => setRatingDelivery(null)}
           deliveryId={ratingDelivery.id}
           customerId={user?.id || ''}
-          riderId={ratingDelivery.rider_id || 'r0000000-0000-0000-0000-000000000001'}
+          riderId={ratingDelivery.rider_id || 'b0000000-0000-0000-0000-000000000001'}
           riderName={ratingDelivery.rider?.full_name || 'John Mukasa'}
           orderReference={ratingDelivery.order_reference}
           onSubmitted={() => setRatingDelivery(null)}

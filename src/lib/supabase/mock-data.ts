@@ -11,7 +11,7 @@ export const INITIAL_PROFILES: Profile[] = [
     updated_at: new Date().toISOString(),
   },
   {
-    id: 'r0000000-0000-0000-0000-000000000001',
+    id: 'b0000000-0000-0000-0000-000000000001',
     full_name: 'John Mukasa',
     phone: '+256 772 123 456',
     role: 'rider',
@@ -20,7 +20,7 @@ export const INITIAL_PROFILES: Profile[] = [
     updated_at: new Date().toISOString(),
   },
   {
-    id: 'r0000000-0000-0000-0000-000000000002',
+    id: 'b0000000-0000-0000-0000-000000000002',
     full_name: 'Sarah Nabukeera',
     phone: '+256 782 987 654',
     role: 'rider',
@@ -29,7 +29,7 @@ export const INITIAL_PROFILES: Profile[] = [
     updated_at: new Date().toISOString(),
   },
   {
-    id: 'r0000000-0000-0000-0000-000000000003',
+    id: 'b0000000-0000-0000-0000-000000000003',
     full_name: 'David Ochieng',
     phone: '+256 701 456 789',
     role: 'rider',
@@ -68,7 +68,7 @@ export const INITIAL_PROFILES: Profile[] = [
 
 export const INITIAL_RIDERS: Rider[] = [
   {
-    user_id: 'r0000000-0000-0000-0000-000000000001',
+    user_id: 'b0000000-0000-0000-0000-000000000001',
     vehicle_type: 'Yamaha DT 125',
     license_plate: 'UFE 234X',
     is_online: true,
@@ -81,7 +81,7 @@ export const INITIAL_RIDERS: Rider[] = [
     updated_at: new Date().toISOString(),
   },
   {
-    user_id: 'r0000000-0000-0000-0000-000000000002',
+    user_id: 'b0000000-0000-0000-0000-000000000002',
     vehicle_type: 'TVS Apache RTR',
     license_plate: 'UGL 882P',
     is_online: true,
@@ -94,7 +94,7 @@ export const INITIAL_RIDERS: Rider[] = [
     updated_at: new Date().toISOString(),
   },
   {
-    user_id: 'r0000000-0000-0000-0000-000000000003',
+    user_id: 'b0000000-0000-0000-0000-000000000003',
     vehicle_type: 'Bajaj Boxer 150',
     license_plate: 'UHG 519T',
     is_online: false,
@@ -141,7 +141,7 @@ export const INITIAL_DELIVERIES: Delivery[] = [
     order_reference: 'ORD-2026-8801',
     sap_byd_document_id: 'SAP-OD-90214',
     customer_id: 'c0000000-0000-0000-0000-000000000001',
-    rider_id: 'r0000000-0000-0000-0000-000000000001',
+    rider_id: 'b0000000-0000-0000-0000-000000000001',
     pickup_address: 'Industrial Area Logistics Hub, 7th Street, Kampala',
     pickup_lat: 0.3150,
     pickup_lng: 32.5980,
@@ -185,7 +185,7 @@ export const INITIAL_DELIVERIES: Delivery[] = [
     order_reference: 'ORD-2026-8803',
     sap_byd_document_id: 'SAP-OD-90218',
     customer_id: 'c0000000-0000-0000-0000-000000000003',
-    rider_id: 'r0000000-0000-0000-0000-000000000002',
+    rider_id: 'b0000000-0000-0000-0000-000000000002',
     pickup_address: 'Garden City Mall Depot, Yusuf Lule Rd',
     pickup_lat: 0.3200,
     pickup_lng: 32.5890,
@@ -207,7 +207,7 @@ export const INITIAL_DELIVERIES: Delivery[] = [
     order_reference: 'ORD-2026-8799',
     sap_byd_document_id: 'SAP-OD-90199',
     customer_id: 'c0000000-0000-0000-0000-000000000001',
-    rider_id: 'r0000000-0000-0000-0000-000000000001',
+    rider_id: 'b0000000-0000-0000-0000-000000000001',
     pickup_address: 'Industrial Area Logistics Hub, 7th Street, Kampala',
     pickup_lat: 0.3150,
     pickup_lng: 32.5980,
@@ -228,7 +228,7 @@ export const INITIAL_DELIVERIES: Delivery[] = [
 
 export const INITIAL_STATUS_HISTORY: DeliveryStatusHistory[] = [
   {
-    id: 'h0000000-0000-0000-0000-000000000001',
+    id: 'a0000000-0000-0000-0000-000000000011',
     delivery_id: 'd0000000-0000-0000-0000-000000000001',
     status: 'pending',
     changed_by: 'a0000000-0000-0000-0000-000000000001',
@@ -236,7 +236,7 @@ export const INITIAL_STATUS_HISTORY: DeliveryStatusHistory[] = [
     created_at: new Date(Date.now() - 45 * 60000).toISOString(),
   },
   {
-    id: 'h0000000-0000-0000-0000-000000000002',
+    id: 'a0000000-0000-0000-0000-000000000012',
     delivery_id: 'd0000000-0000-0000-0000-000000000001',
     status: 'assigned',
     changed_by: 'a0000000-0000-0000-0000-000000000001',
@@ -244,26 +244,26 @@ export const INITIAL_STATUS_HISTORY: DeliveryStatusHistory[] = [
     created_at: new Date(Date.now() - 40 * 60000).toISOString(),
   },
   {
-    id: 'h0000000-0000-0000-0000-000000000003',
+    id: 'a0000000-0000-0000-0000-000000000013',
     delivery_id: 'd0000000-0000-0000-0000-000000000001',
     status: 'accepted',
-    changed_by: 'r0000000-0000-0000-0000-000000000001',
+    changed_by: 'b0000000-0000-0000-0000-000000000001',
     note: 'Rider accepted the delivery assignment',
     created_at: new Date(Date.now() - 35 * 60000).toISOString(),
   },
   {
-    id: 'h0000000-0000-0000-0000-000000000004',
+    id: 'a0000000-0000-0000-0000-000000000014',
     delivery_id: 'd0000000-0000-0000-0000-000000000001',
     status: 'picked_up',
-    changed_by: 'r0000000-0000-0000-0000-000000000001',
+    changed_by: 'b0000000-0000-0000-0000-000000000001',
     note: 'Handover acknowledged by rider. Package verified.',
     created_at: new Date(Date.now() - 20 * 60000).toISOString(),
   },
   {
-    id: 'h0000000-0000-0000-0000-000000000005',
+    id: 'a0000000-0000-0000-0000-000000000015',
     delivery_id: 'd0000000-0000-0000-0000-000000000001',
     status: 'in_transit',
-    changed_by: 'r0000000-0000-0000-0000-000000000001',
+    changed_by: 'b0000000-0000-0000-0000-000000000001',
     note: 'Rider is en route to dropoff location',
     created_at: new Date(Date.now() - 19 * 60000).toISOString(),
   },
@@ -271,14 +271,14 @@ export const INITIAL_STATUS_HISTORY: DeliveryStatusHistory[] = [
 
 export const INITIAL_CHAT_THREADS: ChatThread[] = [
   {
-    id: 'th000000-0000-0000-0000-000000000001',
+    id: 'e0000000-0000-0000-0000-000000000001',
     type: 'rider_customer',
     delivery_id: 'd0000000-0000-0000-0000-000000000001',
     is_active: true,
     created_at: new Date(Date.now() - 35 * 60000).toISOString(),
   },
   {
-    id: 'th000000-0000-0000-0000-000000000002',
+    id: 'e0000000-0000-0000-0000-000000000002',
     type: 'admin_rider',
     delivery_id: null,
     is_active: true,
@@ -288,41 +288,41 @@ export const INITIAL_CHAT_THREADS: ChatThread[] = [
 
 export const INITIAL_CHAT_MESSAGES: ChatMessage[] = [
   {
-    id: 'm0000000-0000-0000-0000-000000000001',
-    thread_id: 'th000000-0000-0000-0000-000000000001',
-    sender_id: 'r0000000-0000-0000-0000-000000000001',
+    id: 'f0000000-0000-0000-0000-000000000001',
+    thread_id: 'e0000000-0000-0000-0000-000000000001',
+    sender_id: 'b0000000-0000-0000-0000-000000000001',
     content: 'Hello Grace! I have picked up your order and I am en route now.',
     created_at: new Date(Date.now() - 15 * 60000).toISOString(),
     read_at: new Date(Date.now() - 14 * 60000).toISOString(),
   },
   {
-    id: 'm0000000-0000-0000-0000-000000000002',
-    thread_id: 'th000000-0000-0000-0000-000000000001',
+    id: 'f0000000-0000-0000-0000-000000000002',
+    thread_id: 'e0000000-0000-0000-0000-000000000001',
     sender_id: 'c0000000-0000-0000-0000-000000000001',
     content: 'Thank you John! Please notify security at Gate B when you arrive.',
     created_at: new Date(Date.now() - 12 * 60000).toISOString(),
     read_at: new Date(Date.now() - 11 * 60000).toISOString(),
   },
   {
-    id: 'm0000000-0000-0000-0000-000000000003',
-    thread_id: 'th000000-0000-0000-0000-000000000001',
-    sender_id: 'r0000000-0000-0000-0000-000000000001',
+    id: 'f0000000-0000-0000-0000-000000000003',
+    thread_id: 'e0000000-0000-0000-0000-000000000001',
+    sender_id: 'b0000000-0000-0000-0000-000000000001',
     content: 'Understood, will do so. About 10 mins away.',
     created_at: new Date(Date.now() - 5 * 60000).toISOString(),
     read_at: null,
   },
   {
-    id: 'm0000000-0000-0000-0000-000000000004',
-    thread_id: 'th000000-0000-0000-0000-000000000002',
+    id: 'f0000000-0000-0000-0000-000000000004',
+    thread_id: 'e0000000-0000-0000-0000-000000000002',
     sender_id: 'a0000000-0000-0000-0000-000000000001',
     content: 'John, please note road works near Jinja Rd roundabout. Use Lugogo bypass if congested.',
     created_at: new Date(Date.now() - 45 * 60000).toISOString(),
     read_at: new Date(Date.now() - 40 * 60000).toISOString(),
   },
   {
-    id: 'm0000000-0000-0000-0000-000000000005',
-    thread_id: 'th000000-0000-0000-0000-000000000002',
-    sender_id: 'r0000000-0000-0000-0000-000000000001',
+    id: 'f0000000-0000-0000-0000-000000000005',
+    thread_id: 'e0000000-0000-0000-0000-000000000002',
+    sender_id: 'b0000000-0000-0000-0000-000000000001',
     content: 'Got it, taking the Kololo bypass now. Thanks HQ.',
     created_at: new Date(Date.now() - 38 * 60000).toISOString(),
     read_at: new Date(Date.now() - 37 * 60000).toISOString(),
@@ -331,23 +331,13 @@ export const INITIAL_CHAT_MESSAGES: ChatMessage[] = [
 
 export const INITIAL_RATINGS: Rating[] = [
   {
-    id: 'rate0000-0000-0000-0000-000000000001',
-    delivery_id: 'd0000000-0000-0000-0000-000000000099',
-    customer_id: 'c0000000-0000-0000-0000-000000000002',
-    rider_id: 'r0000000-0000-0000-0000-000000000001',
+    id: 'ba000000-0000-0000-0000-000000000001',
+    delivery_id: 'd0000000-0000-0000-0000-000000000004',
+    customer_id: 'c0000000-0000-0000-0000-000000000001',
+    rider_id: 'b0000000-0000-0000-0000-000000000001',
     stars: 5,
     comment: 'Super fast delivery! Package was handled with extreme care.',
     tags: ['On time', 'Friendly', 'Careful handling'],
     created_at: new Date(Date.now() - 86400000).toISOString(),
-  },
-  {
-    id: 'rate0000-0000-0000-0000-000000000002',
-    delivery_id: 'd0000000-0000-0000-0000-000000000098',
-    customer_id: 'c0000000-0000-0000-0000-000000000003',
-    rider_id: 'r0000000-0000-0000-0000-000000000002',
-    stars: 5,
-    comment: 'Great communication through the app chat.',
-    tags: ['On time', 'Friendly'],
-    created_at: new Date(Date.now() - 2 * 86400000).toISOString(),
   },
 ];

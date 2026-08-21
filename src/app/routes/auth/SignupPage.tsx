@@ -13,6 +13,7 @@ export const SignupPage: React.FC = () => {
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
+  const [password, setPassword] = useState('');
   const [role, setRole] = useState<'rider' | 'customer'>('rider');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -22,7 +23,7 @@ export const SignupPage: React.FC = () => {
     setIsLoading(true);
     setError(null);
 
-    const result = await signup(fullName, email, phone, role);
+    const result = await signup(fullName, email, phone, role, password);
     setIsLoading(false);
 
     if (result.error) {
@@ -105,6 +106,16 @@ export const SignupPage: React.FC = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+            />
+
+            <Input
+              label="Password *"
+              type="password"
+              placeholder="Choose a password (min. 6 characters)"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              minLength={6}
             />
 
             <Input

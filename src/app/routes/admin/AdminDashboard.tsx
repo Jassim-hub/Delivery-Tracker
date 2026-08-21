@@ -30,27 +30,30 @@ export const AdminDashboard: React.FC = () => {
 
   const [deliveries, setDeliveries] = useState<Delivery[]>([]);
   const [riders, setRiders] = useState<Rider[]>([]);
-  const [selectedRiderForDispatch, setSelectedRiderForDispatch] = useState<string>('');
-
-  const loadData = () => {
-    const dels = mockStore.getDeliveries();
-    const rds = mockStore.getRiders();
-    setDeliveries(dels);
-    setRiders(rds);
-  };
+  // Bug 1 fix: keyed by deliveryId so each card has its own independent selection
+  const [riderSelections, setRiderSelections] = useState<Record<string, string>>({});
 
   useEffect(() => {
+    // Bug 4 fix: fetch logic inside the effect — no stale closure.
+    const loadData = () => {
+      setDeliveries(mockStore.getDeliveries());
+      setRiders(mockStore.getRiders());
+    };
+
     loadData();
-    const unsubscribe = mockStore.subscribe(() => {
-      loadData();
-    });
+    const unsubscribe = mockStore.subscribe(loadData);
     return () => unsubscribe();
   }, []);
 
   const onlineRiders = riders.filter((r) => r.is_online);
   const pendingDeliveries = deliveries.filter((d) => d.status === 'pending');
   const inTransitDeliveries = deliveries.filter((d) => ['in_transit', 'picked_up'].includes(d.status));
-  const deliveredToday = deliveries.filter((d) => d.status === 'delivered');
+  // Bug 8 fix: filter to today only using delivered_at timestamp
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0);
+  const deliveredToday = deliveries.filter(
+    (d) => d.status === 'delivered' && d.delivered_at && new Date(d.delivered_at) >= todayStart
+  );
 
   const handleQuickAssign = (deliveryId: string, riderId: string) => {
     if (!user || !riderId) return;
@@ -259,9 +262,12 @@ export const AdminDashboard: React.FC = () => {
                     </div>
 
                     <div className="flex items-center gap-2 pt-1">
+                      {/* Bug 1 fix: each card uses its own keyed entry in riderSelections */}
                       <select
-                        value={selectedRiderForDispatch}
-                        onChange={(e) => setSelectedRiderForDispatch(e.target.value)}
+                        value={riderSelections[del.id] || ''}
+                        onChange={(e) =>
+                          setRiderSelections((prev) => ({ ...prev, [del.id]: e.target.value }))
+                        }
                         className="flex-1 text-xs rounded-lg p-1.5 bg-white border border-gray-300 focus:outline-none focus:border-primary"
                       >
                         <option value="">Select Rider...</option>
@@ -275,10 +281,10 @@ export const AdminDashboard: React.FC = () => {
                       <Button
                         variant="primary"
                         size="sm"
-                        disabled={!selectedRiderForDispatch}
+                        disabled={!riderSelections[del.id]}
                         onClick={() => {
-                          handleQuickAssign(del.id, selectedRiderForDispatch);
-                          setSelectedRiderForDispatch('');
+                          handleQuickAssign(del.id, riderSelections[del.id]);
+                          setRiderSelections((prev) => ({ ...prev, [del.id]: '' }));
                         }}
                         className="text-xs font-bold px-3 py-1.5 h-8"
                       >

@@ -93,19 +93,40 @@ export const RiderActiveDelivery: React.FC = () => {
   };
 
   // Canvas Signature functions
+  // Bug 7 fix: scale canvas buffer by devicePixelRatio so strokes are sharp on
+  // retina/HiDPI screens and coordinates are computed in physical pixels.
+  const initCanvas = (canvas: HTMLCanvasElement) => {
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+    const ctx = canvas.getContext('2d');
+    if (ctx) ctx.scale(dpr, dpr);
+  };
+
+  const getCanvasPoint = (
+    e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>,
+    rect: DOMRect
+  ) => {
+    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+    const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
+    // Use CSS pixel offset — ctx is already scaled to dpr via initCanvas
+    return { x: clientX - rect.left, y: clientY - rect.top };
+  };
+
   const startDrawing = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
     setIsDrawing(true);
     const canvas = canvasRef.current;
     if (!canvas) return;
+    // Initialise on first touch in case the canvas was never sized yet
+    if (canvas.width === 380) initCanvas(canvas);
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
     const rect = canvas.getBoundingClientRect();
-    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
-    const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
-
+    const { x, y } = getCanvasPoint(e, rect);
     ctx.beginPath();
-    ctx.moveTo(clientX - rect.left, clientY - rect.top);
+    ctx.moveTo(x, y);
   };
 
   const draw = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
@@ -116,13 +137,11 @@ export const RiderActiveDelivery: React.FC = () => {
     if (!ctx) return;
 
     const rect = canvas.getBoundingClientRect();
-    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
-    const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
-
+    const { x, y } = getCanvasPoint(e, rect);
     ctx.lineWidth = 2.5;
     ctx.lineCap = 'round';
     ctx.strokeStyle = '#1D4ED8';
-    ctx.lineTo(clientX - rect.left, clientY - rect.top);
+    ctx.lineTo(x, y);
     ctx.stroke();
     setHasSignature(true);
   };

@@ -17,6 +17,8 @@ export type ThreadType = 'admin_rider' | 'rider_customer';
 export interface Profile {
   id: string;
   full_name: string;
+  email?: string;
+  password?: string;
   phone: string | null;
   role: Role;
   avatar_url: string | null;

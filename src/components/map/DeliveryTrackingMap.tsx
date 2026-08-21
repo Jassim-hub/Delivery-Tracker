@@ -163,7 +163,8 @@ export const DeliveryTrackingMap: React.FC<DeliveryTrackingMapProps> = ({
         <div className="pointer-events-auto flex items-center gap-2 bg-orange-100/95 backdrop-blur-md px-3.5 py-2 rounded-xl border border-orange-300 shadow-lg text-orange-950">
           <div className="flex flex-col">
             <span className="text-[10px] text-accent font-bold uppercase tracking-wider">Live ETA</span>
-            <span className="text-sm font-extrabold text-white">
+            {/* Bug 9 fix: was text-white on a light orange background — invisible */}
+            <span className="text-sm font-extrabold text-orange-950">
               {formatDuration(etaSeconds)} ({formatDistance(distanceMeters)})
             </span>
           </div>

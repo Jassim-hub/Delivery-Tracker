@@ -32,20 +32,19 @@ export const RiderDashboard: React.FC = () => {
   const [deliveries, setDeliveries] = useState<Delivery[]>([]);
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
 
-  const fetchRiderData = () => {
-    if (!user) return;
-    const info = mockStore.getRiderById(user.id);
-    setRiderInfo(info);
-
-    const allDeliveries = mockStore.getDeliveries();
-    setDeliveries(allDeliveries);
-  };
-
   useEffect(() => {
+    // Bug 4 fix: fetch logic lives inside the effect so it always has a fresh
+    // reference to `user` — no stale closure possible.
+    const fetchRiderData = () => {
+      if (!user) return;
+      const info = mockStore.getRiderById(user.id);
+      setRiderInfo(info);
+      const allDeliveries = mockStore.getDeliveries();
+      setDeliveries(allDeliveries);
+    };
+
     fetchRiderData();
-    const unsubscribe = mockStore.subscribe(() => {
-      fetchRiderData();
-    });
+    const unsubscribe = mockStore.subscribe(fetchRiderData);
     return () => unsubscribe();
   }, [user?.id]);
 

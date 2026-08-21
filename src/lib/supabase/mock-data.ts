@@ -4,6 +4,8 @@ export const INITIAL_PROFILES: Profile[] = [
   {
     id: 'a0000000-0000-0000-0000-000000000001',
     full_name: 'Admin Dispatcher (HQ)',
+    email: 'admin@dt.com',
+    password: 'admin123',
     phone: '+256 700 112 233',
     role: 'admin',
     avatar_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150',
@@ -13,6 +15,8 @@ export const INITIAL_PROFILES: Profile[] = [
   {
     id: 'b0000000-0000-0000-0000-000000000001',
     full_name: 'John Mukasa',
+    email: 'john@dt.com',
+    password: 'rider123',
     phone: '+256 772 123 456',
     role: 'rider',
     avatar_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150',
@@ -22,6 +26,8 @@ export const INITIAL_PROFILES: Profile[] = [
   {
     id: 'b0000000-0000-0000-0000-000000000002',
     full_name: 'Sarah Nabukeera',
+    email: 'sarah@dt.com',
+    password: 'rider123',
     phone: '+256 782 987 654',
     role: 'rider',
     avatar_url: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150',
@@ -31,6 +37,8 @@ export const INITIAL_PROFILES: Profile[] = [
   {
     id: 'b0000000-0000-0000-0000-000000000003',
     full_name: 'David Ochieng',
+    email: 'david@dt.com',
+    password: 'rider123',
     phone: '+256 701 456 789',
     role: 'rider',
     avatar_url: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150',
@@ -40,6 +48,8 @@ export const INITIAL_PROFILES: Profile[] = [
   {
     id: 'c0000000-0000-0000-0000-000000000001',
     full_name: 'Grace Tumusiime',
+    email: 'grace@dt.com',
+    password: 'customer123',
     phone: '+256 750 334 455',
     role: 'customer',
     avatar_url: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150',
@@ -49,6 +59,8 @@ export const INITIAL_PROFILES: Profile[] = [
   {
     id: 'c0000000-0000-0000-0000-000000000002',
     full_name: 'Michael Kato',
+    email: 'michael@dt.com',
+    password: 'customer123',
     phone: '+256 775 667 788',
     role: 'customer',
     avatar_url: 'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=150',
@@ -58,6 +70,8 @@ export const INITIAL_PROFILES: Profile[] = [
   {
     id: 'c0000000-0000-0000-0000-000000000003',
     full_name: 'Brenda Akello',
+    email: 'brenda@dt.com',
+    password: 'customer123',
     phone: '+256 702 889 900',
     role: 'customer',
     avatar_url: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150',

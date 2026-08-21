@@ -23,6 +23,16 @@ import {
   INITIAL_RATINGS,
 } from './mock-data';
 
+// Safe JSON parse with fallback to prevent crashes from corrupted localStorage
+const safeParse = <T,>(key: string, fallback: T): T => {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : fallback;
+  } catch {
+    return fallback;
+  }
+};
+
 const STORAGE_KEYS = {
   PROFILES: 'dt_profiles_v1',
   RIDERS: 'dt_riders_v1',
@@ -178,10 +188,11 @@ class MockDataStore {
   public getProfiles(): Profile[] {
     if (this._profilesCache) return this._profilesCache;
     try {
-      this._profilesCache = JSON.parse(localStorage.getItem(STORAGE_KEYS.PROFILES) || '[]');
+      this._profilesCache = safeParse(STORAGE_KEYS.PROFILES, []);
       return this._profilesCache!;
     } catch {
-      this._profilesCache = INITIAL_PROFILES;
+      // SEC-4 FIX: never return password fields even in fallback
+      this._profilesCache = INITIAL_PROFILES.map(({ password, ...p }) => p);
       return this._profilesCache;
     }
   }
@@ -599,7 +610,7 @@ class MockDataStore {
     userAId: string,
     userBId: string
   ): ChatThread {
-    const threads: ChatThread[] = JSON.parse(localStorage.getItem(STORAGE_KEYS.THREADS) || '[]');
+    const threads: ChatThread[] = safeParse(STORAGE_KEYS.THREADS, []);
     let existing: ChatThread | undefined;
 
     if (type === 'rider_customer') {
@@ -636,7 +647,7 @@ class MockDataStore {
   }
 
   public sendChatMessage(threadId: string, senderId: string, content: string): ChatMessage {
-    const messages: ChatMessage[] = JSON.parse(localStorage.getItem(STORAGE_KEYS.MESSAGES) || '[]');
+    const messages: ChatMessage[] = safeParse(STORAGE_KEYS.MESSAGES, []);
     const newMsg: ChatMessage = {
       id: `m-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
       thread_id: threadId,
@@ -655,7 +666,7 @@ class MockDataStore {
   }
 
   public markThreadMessagesAsRead(threadId: string, readerUserId: string): void {
-    const messages: ChatMessage[] = JSON.parse(localStorage.getItem(STORAGE_KEYS.MESSAGES) || '[]');
+    const messages: ChatMessage[] = safeParse(STORAGE_KEYS.MESSAGES, []);
     let changed = false;
 
     const updated = messages.map((m) => {
@@ -678,16 +689,12 @@ class MockDataStore {
   // -------------------------------------------------------------------------
   public getRatings(riderId?: string): Rating[] {
     if (!this._ratingsCache) {
-      try {
-        const ratings: Rating[] = JSON.parse(localStorage.getItem(STORAGE_KEYS.RATINGS) || '[]');
-        const profiles = this.getProfiles();
-        this._ratingsCache = ratings.map((r) => ({
-          ...r,
-          customer: profiles.find((p) => p.id === r.customer_id),
-        }));
-      } catch {
-        this._ratingsCache = INITIAL_RATINGS;
-      }
+      const ratings: Rating[] = safeParse(STORAGE_KEYS.RATINGS, []);
+      const profiles = this.getProfiles();
+      this._ratingsCache = ratings.map((r) => ({
+        ...r,
+        customer: profiles.find((p) => p.id === r.customer_id),
+      }));
     }
     return riderId ? this._ratingsCache!.filter((r) => r.rider_id === riderId) : this._ratingsCache!;
   }
@@ -697,7 +704,7 @@ class MockDataStore {
   }
 
   public addRating(deliveryId: string, customerId: string, riderId: string, stars: number, comment?: string, tags?: string[]): Rating {
-    const ratings: Rating[] = JSON.parse(localStorage.getItem(STORAGE_KEYS.RATINGS) || '[]');
+    const ratings: Rating[] = safeParse(STORAGE_KEYS.RATINGS, []);
     const newRating: Rating = {
       id: `rate-${Date.now()}`,
       delivery_id: deliveryId,

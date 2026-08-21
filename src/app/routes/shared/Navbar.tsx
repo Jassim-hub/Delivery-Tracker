@@ -65,7 +65,7 @@ export const Navbar: React.FC = () => {
   const navLinks = getNavLinks();
 
   return (
-    <header className="sticky top-0 z-40 bg-white/60 dark:bg-gray-900/80 backdrop-blur-md border-b border-slate-900/10 dark:border-gray-700/50 shadow-sm transition-colors duration-200">
+    <header className="sticky top-0 z-40 bg-white/60 dark:bg-gray-900/80 backdrop-blur-md border-b border-slate-900/10 dark:border-gray-700/50 shadow-sm transition-colors duration-200 pt-safe-top">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Brand Logo */}

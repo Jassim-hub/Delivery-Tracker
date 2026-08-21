@@ -39,7 +39,7 @@ export const RoleSwitcher: React.FC = () => {
   };
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 print:hidden">
+    <div className="fixed bottom-16 sm:bottom-4 right-4 z-50 print:hidden">
       {/* Trigger Button */}
       <div className="relative">
         <button

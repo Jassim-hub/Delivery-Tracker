@@ -73,17 +73,24 @@ export function calculateEstimatedDurationSeconds(
 }
 
 /**
- * Generates an external Google Maps turn-by-turn navigation deep-link
+ * Generates an external Google Maps turn-by-turn navigation deep-link.
+ *
+ * FIX BUG 8: The Maps Directions URL only honours `destination` — it accepts
+ * either a place name or a lat,lng pair.  When we have an address string we
+ * pass it as the destination value directly so Maps resolves it to the right
+ * place.  The `destination_name` parameter is not a valid Directions API field
+ * and was previously silently ignored.
  */
 export function generateGoogleMapsNavigationUrl(
   destinationLat: number,
   destinationLng: number,
   destinationName?: string
 ): string {
-  const query = destinationName
+  // Prefer human-readable address when available so Maps shows the name in UI.
+  const destination = destinationName
     ? encodeURIComponent(destinationName)
     : `${destinationLat},${destinationLng}`;
-  return `https://www.google.com/maps/dir/?api=1&destination=${destinationLat},${destinationLng}&destination_name=${query}`;
+  return `https://www.google.com/maps/dir/?api=1&destination=${destination}`;
 }
 
 /**
@@ -93,7 +100,7 @@ export function interpolateCoordinates(
   start: { lat: number; lng: number },
   end: { lat: number; lng: number },
   steps = 20
-): Array<{ lat: number; lng: number }> {
+): { lat: number; lng: number }[] {
   const points = [];
   for (let i = 0; i <= steps; i++) {
     const factor = i / steps;

@@ -38,7 +38,7 @@ export function Tabs({
 
 export function TabsList({ className, children }: { className?: string; children: React.ReactNode }) {
   return (
-    <div className={cn('inline-flex items-center gap-1.5 rounded-xl bg-gray-100 p-1.5 text-gray-600', className)}>
+    <div className={cn('inline-flex items-center gap-1.5 rounded-xl bg-gray-100 dark:bg-gray-800 p-1.5 text-gray-600 dark:text-gray-400', className)}>
       {children}
     </div>
   );
@@ -63,10 +63,10 @@ export function TabsTrigger({
       type="button"
       onClick={() => ctx.setActiveTab(value)}
       className={cn(
-        'inline-flex items-center justify-center whitespace-nowrap rounded-lg px-4 py-2 text-xs font-semibold ring-offset-white transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2',
+        'inline-flex items-center justify-center whitespace-nowrap rounded-lg px-4 py-2 text-xs font-semibold ring-offset-white dark:ring-offset-gray-900 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2',
         isActive
-          ? 'bg-white text-blue-700 shadow-sm font-bold'
-          : 'text-gray-600 hover:text-gray-900 hover:bg-white/50',
+          ? 'bg-white dark:bg-gray-800 text-blue-700 dark:text-blue-400 shadow-sm font-bold'
+          : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-white/50 dark:hover:bg-gray-700/50',
         className
       )}
     >

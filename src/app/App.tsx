@@ -36,7 +36,7 @@ const AppLayout: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col bg-sky-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 transition-colors duration-200">
       <Navbar />
-      <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
+      <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 md:ml-56">
         <Outlet />
       </main>
       <RoleSwitcher />

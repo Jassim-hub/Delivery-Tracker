@@ -239,7 +239,8 @@ export const AdminSapSync: React.FC = () => {
           </CardTitle>
         </CardHeader>
         <CardContent className="p-0">
-          <table className="w-full text-left text-xs text-gray-700">
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[560px] text-left text-xs text-gray-700">
             <thead className="bg-gray-50 text-[11px] uppercase tracking-wider text-muted font-bold border-b border-gray-100">
               <tr>
                 <th className="py-3 px-4">Timestamp</th>
@@ -276,6 +277,7 @@ export const AdminSapSync: React.FC = () => {
               ))}
             </tbody>
           </table>
+        </div>
         </CardContent>
       </Card>
     </div>

@@ -22,8 +22,17 @@ export function useGpsBroadcast(
   const locationRef = useRef<GeoLocation>(currentLocation);
   locationRef.current = currentLocation;
 
+  // FIX BUG 4: capture isOnline in a ref so the callback stays stable across
+  // isOnline toggles — the interval no longer restarts when availability changes.
+  const isOnlineRef = useRef(isOnline);
+  isOnlineRef.current = isOnline;
+
+  const riderUserIdRef = useRef(riderUserId);
+  riderUserIdRef.current = riderUserId;
+
+  // Stable callback — no deps that change on every toggle.
   const attemptBroadcast = useCallback(() => {
-    if (!riderUserId || !isOnline) return;
+    if (!riderUserIdRef.current || !isOnlineRef.current) return;
     const { lat, lng } = locationRef.current;
 
     const shouldBroadcast = shouldBroadcastLocation(
@@ -45,7 +54,7 @@ export function useGpsBroadcast(
       setBroadcastCount((c) => c + 1);
 
       if (isUsingMockBackend) {
-        mockStore.updateRiderLocation(riderUserId, lat, lng);
+        mockStore.updateRiderLocation(riderUserIdRef.current, lat, lng);
       } else {
         supabase
           .from('riders')
@@ -54,25 +63,24 @@ export function useGpsBroadcast(
             current_lng: lng,
             last_location_at: now.toISOString(),
           })
-          .eq('user_id', riderUserId)
+          .eq('user_id', riderUserIdRef.current)
           .then(({ error }) => {
             if (error) console.error('Error broadcasting GPS update to Supabase:', error);
           });
       }
     }
-  }, [riderUserId, isOnline]);
+  }, []); // empty deps — all mutable state via refs
 
-  // Bug 6 fix: fire on coordinate change AND on a 12s timer so stationary
-  // riders still send a heartbeat write even when GPS does not emit new events.
+  // Fire immediately when coordinates change (displacement threshold).
   useEffect(() => {
     attemptBroadcast();
   }, [currentLocation.lat, currentLocation.lng, attemptBroadcast]);
 
+  // Single long-lived interval — only recreated when the rider changes identity.
   useEffect(() => {
-    if (!riderUserId || !isOnline) return;
     const timer = setInterval(attemptBroadcast, BROADCAST_INTERVAL_MS);
     return () => clearInterval(timer);
-  }, [riderUserId, isOnline, attemptBroadcast]);
+  }, [riderUserId, attemptBroadcast]);
 
   return { lastBroadcastAt, broadcastCount };
 }

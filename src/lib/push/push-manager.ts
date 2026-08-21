@@ -10,7 +10,7 @@ export interface PushNotificationPayload {
 
 export class PushNotificationManager {
   private static instance: PushNotificationManager;
-  private isSupported: boolean = false;
+  private isSupported = false;
 
   private constructor() {
     this.isSupported = typeof window !== 'undefined' && 'serviceWorker' in navigator && 'Notification' in window;

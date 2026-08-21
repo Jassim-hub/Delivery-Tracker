@@ -111,6 +111,10 @@ export interface ChatThread {
   delivery_id: string | null;
   is_active: boolean;
   created_at: string;
+  // For admin_rider threads — keyed by both participants so each pair gets
+  // their own unique channel (BUG 3 fix).
+  participant_a?: string;
+  participant_b?: string;
   participants?: Profile[];
   last_message?: ChatMessage;
   unread_count?: number;

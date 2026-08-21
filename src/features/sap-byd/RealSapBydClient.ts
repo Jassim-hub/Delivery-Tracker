@@ -16,13 +16,21 @@ import { DeliveryStatus } from '@/types';
  * - SAP_BYD_BASE_URL (e.g. https://myXXXXXX.businessbydesign.cloud.sap)
  * - SAP_BYD_AUTH_TOKEN (HTTP Basic auth string or OAuth2 Bearer token)
  */
+// SEC-4 FIX: SAP ByD credentials must never be exposed to the browser.
+// The VITE_ prefix makes env vars part of the client bundle; SAP_BYD_BASE_URL
+// and SAP_BYD_AUTH_TOKEN are server-only values consumed by the Edge Function.
+// RealSapBydClient is an adapter stub — in production it is called from the
+// Supabase Edge Function (Deno) where process.env / Deno.env.get() is used,
+// NOT from the frontend bundle. Frontend code must always go through the mock.
 export class RealSapBydClient implements SapBydClient {
   private baseUrl: string;
   private authToken: string;
 
   constructor(
-    baseUrl = import.meta.env.VITE_SAP_BYD_BASE_URL || '',
-    authToken = import.meta.env.VITE_SAP_BYD_AUTH_TOKEN || ''
+    // Do NOT pass import.meta.env here — these values are server-side only.
+    // The Edge Function injects them via Deno.env.get().
+    baseUrl = '',
+    authToken = ''
   ) {
     this.baseUrl = baseUrl.replace(/\/$/, '');
     this.authToken = authToken;
@@ -159,7 +167,7 @@ export class RealSapBydClient implements SapBydClient {
     }
   }
 
-  async fetchAllPendingOrders(): Promise<Array<{ orderRef: string; sapDocId: string; note: DeliveryNote; destination: DestinationDetails }>> {
+  async fetchAllPendingOrders(): Promise<{ orderRef: string; sapDocId: string; note: DeliveryNote; destination: DestinationDetails }[]> {
     // Queries all Outbound Deliveries with status 'Released' / 'Not Started'
     return [];
   }

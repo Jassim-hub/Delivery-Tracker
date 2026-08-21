@@ -28,13 +28,14 @@ export function Dialog({
       }
     };
     if (isOpen) {
+      const prevOverflow = document.body.style.overflow;
       document.body.style.overflow = 'hidden';
       window.addEventListener('keydown', handleKeyDown);
+      return () => {
+        document.body.style.overflow = prevOverflow;
+        window.removeEventListener('keydown', handleKeyDown);
+      };
     }
-    return () => {
-      document.body.style.overflow = 'unset';
-      window.removeEventListener('keydown', handleKeyDown);
-    };
   }, [isOpen, onClose]);
 
   if (!isOpen) return null;
@@ -63,14 +64,14 @@ export function Dialog({
         aria-labelledby={title ? 'dialog-title' : undefined}
         aria-describedby={description ? 'dialog-desc' : undefined}
         className={cn(
-          'relative w-full rounded-2xl bg-white/70 backdrop-blur-md border border-slate-900/10 p-6 shadow-lg transition-all animate-slide-up z-10 max-h-[90vh] overflow-y-auto',
+          'relative w-full rounded-2xl bg-white/70 dark:bg-gray-900/85 backdrop-blur-md border border-slate-900/10 dark:border-gray-700 p-6 shadow-lg transition-all animate-slide-up z-10 max-h-[90vh] overflow-y-auto',
           maxWidthClasses[maxWidth]
         )}
       >
         {showCloseButton && (
           <button
             onClick={onClose}
-            className="absolute right-4 top-4 rounded-full p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="absolute right-4 top-4 rounded-full p-1.5 text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
             aria-label="Close dialog"
           >
             <X className="h-5 w-5" />
@@ -79,7 +80,7 @@ export function Dialog({
 
         {title && (
           <div className="mb-4 pr-6">
-            <h3 id="dialog-title" className="text-xl font-bold text-gray-900 leading-tight">
+            <h3 id="dialog-title" className="text-xl font-bold text-gray-900 dark:text-gray-100 leading-tight">
               {title}
             </h3>
             {description && (

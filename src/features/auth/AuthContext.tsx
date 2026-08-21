@@ -118,7 +118,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const { error } = await supabase.auth.signInWithPassword({
         email,
-        password: password || 'password123',
+        password: password ?? '',
       });
       if (error) return { error: error.message };
       return {};
@@ -139,7 +139,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       try {
         const { error } = await supabase.auth.signUp({
           email,
-          password: password || 'password123',
+          password: password ?? '',
           options: { data: { full_name: fullName, role } },
         });
         if (error) return { error: error.message };

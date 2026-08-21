@@ -23,6 +23,7 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const dismiss = useCallback((id: string) => {
     clearTimeout(timers.current[id]);
+    delete timers.current[id];
     setToasts((prev) => prev.filter((t) => t.id !== id));
   }, []);
 
@@ -52,9 +53,9 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   return (
     <ToastContext.Provider value={{ toast }}>
       {children}
-      {/* Toast Stack — fixed bottom-left, above role switcher */}
+      {/* Toast Stack — fixed top-right, clear of bottom bars */}
       <div
-        className="fixed bottom-20 left-4 z-[9999] flex flex-col gap-2 max-w-sm w-full pointer-events-none"
+        className="fixed top-4 right-4 z-[9999] flex flex-col gap-2 max-w-sm w-full pointer-events-none"
         aria-live="polite"
         aria-label="Notifications"
       >

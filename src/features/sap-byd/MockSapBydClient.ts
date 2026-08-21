@@ -75,8 +75,8 @@ export class MockSapBydClient implements SapBydClient {
     };
   }
 
-  async fetchAllPendingOrders(): Promise<Array<{ orderRef: string; sapDocId: string; note: DeliveryNote; destination: DestinationDetails }>> {
+  async fetchAllPendingOrders(): Promise<{ orderRef: string; sapDocId: string; note: DeliveryNote; destination: DestinationDetails }[]> {
     await this.simulateNetworkDelay();
-    return fixtureData as Array<{ orderRef: string; sapDocId: string; note: DeliveryNote; destination: DestinationDetails }>;
+    return fixtureData as { orderRef: string; sapDocId: string; note: DeliveryNote; destination: DestinationDetails }[];
   }
 }

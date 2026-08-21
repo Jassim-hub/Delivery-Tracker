@@ -34,5 +34,5 @@ export interface SapBydClient {
   fetchDeliveryNote(orderRef: string): Promise<DeliveryNote>;
   fetchDestinationDetails(orderRef: string): Promise<DestinationDetails>;
   syncDeliveryStatus(deliveryId: string, status: DeliveryStatus): Promise<{ success: boolean; syncedAt: string }>;
-  fetchAllPendingOrders(): Promise<Array<{ orderRef: string; sapDocId: string; note: DeliveryNote; destination: DestinationDetails }>>;
+  fetchAllPendingOrders(): Promise<{ orderRef: string; sapDocId: string; note: DeliveryNote; destination: DestinationDetails }[]>;
 }

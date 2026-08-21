@@ -89,7 +89,7 @@ export const RiderDashboard: React.FC = () => {
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-[240px_minmax(0,1fr)_240px] gap-0 space-y-5 pb-12">
+    <div className="grid grid-cols-1 md:grid-cols-[240px_minmax(0,1fr)_240px] gap-x-0 gap-y-5 pb-28 sm:pb-12">
       <aside className="border-r border-sky-900/15 pr-4 bg-white/25 backdrop-blur-md min-h-full">
         {user && <OnboardingCarousel role="rider" userId={user.id} />}
       </aside>
@@ -258,7 +258,7 @@ export const RiderDashboard: React.FC = () => {
       </div>
 
       {/* Quick Navigation Footer Bar */}
-      <div className="fixed bottom-0 left-0 right-0 z-30 bg-surface/95 backdrop-blur-md border-t border-gray-200 p-2 sm:hidden flex items-center justify-around">
+      <div className="fixed bottom-0 left-0 right-0 z-30 bg-surface/95 backdrop-blur-md border-t border-gray-200 p-2 pb-safe-bottom sm:hidden flex items-center justify-around">
         <button
           onClick={() => navigate('/rider')}
           className="flex flex-col items-center gap-0.5 text-primary text-[10px] font-bold"

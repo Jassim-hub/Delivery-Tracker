@@ -70,9 +70,6 @@ export const CustomerDashboard: React.FC = () => {
   const CurrentTutorialIcon = currentTutorialSlide.icon;
 
   useEffect(() => {
-    // Bug 4 fix: all fetch logic inside the effect for a fresh closure.
-    // Bug 5 fix: ratingDelivery check uses a ref-stable setter form so it never
-    //            reads a stale closure value.
     const loadData = () => {
       if (!user) return;
       const all = mockStore.getDeliveries().filter((d) => d.customer_id === user.id);
@@ -81,12 +78,15 @@ export const CustomerDashboard: React.FC = () => {
       const active = all.find((d) => ['pending', 'assigned', 'accepted', 'picked_up', 'in_transit'].includes(d.status));
       setActiveDelivery(active);
 
+      // FIX BUG 7: always refresh riderInfo on every loadData call so the live
+      // map location is never stale — clear it when there is no active rider.
       if (active?.rider_id) {
-        const r = mockStore.getRiderById(active.rider_id);
-        setRiderInfo(r);
+        setRiderInfo(mockStore.getRiderById(active.rider_id));
+      } else {
+        setRiderInfo(undefined);
       }
 
-      // Bug 5 fix: use functional updater so we read current state, not closure snapshot
+      // Use functional updater so we never read a stale closure value.
       const unrated = all.find((d) => d.status === 'delivered' && !mockStore.getRatingForDelivery(d.id));
       if (unrated && !sessionStorage.getItem(`dt_rating_prompted_${unrated.id}`)) {
         setRatingDelivery((current) => {
@@ -129,7 +129,7 @@ export const CustomerDashboard: React.FC = () => {
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-[240px_minmax(0,1fr)_240px] gap-0 space-y-5 pb-16 max-w-3xl md:max-w-7xl mx-auto">
+    <div className="grid grid-cols-1 md:grid-cols-[240px_minmax(0,1fr)_240px] gap-x-0 gap-y-5 pb-16 max-w-3xl md:max-w-7xl mx-auto">
       <aside className="border-r border-sky-900/15 pr-4 bg-white/25 backdrop-blur-md min-h-full">
         {user && <OnboardingCarousel role="customer" userId={user.id} />}
       </aside>

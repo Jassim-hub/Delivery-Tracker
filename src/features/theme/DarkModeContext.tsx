@@ -7,7 +7,7 @@ interface DarkModeContextType {
 
 const DarkModeContext = createContext<DarkModeContextType>({
   isDark: false,
-  toggle: () => {},
+  toggle: () => undefined,
 });
 
 const STORAGE_KEY = 'dt_dark_mode_v1';

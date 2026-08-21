@@ -13,7 +13,7 @@ interface ToastContextType {
   toast: (message: string, type?: ToastType) => void;
 }
 
-const ToastContext = createContext<ToastContextType>({ toast: () => {} });
+const ToastContext = createContext<ToastContextType>({ toast: (_message: string, _type?: ToastType) => void 0 });
 
 export const useToast = () => useContext(ToastContext);
 

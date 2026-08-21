@@ -25,14 +25,14 @@ export const PwaInstallPrompt: React.FC = () => {
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstall);
 
-    // Show iOS tip if on mobile Safari
+    let iosTimer: ReturnType<typeof setTimeout> | null = null;
     if (isIos && !sessionStorage.getItem('dt_ios_prompt_dismissed')) {
-      const timer = setTimeout(() => setShowPrompt(true), 3000);
-      return () => clearTimeout(timer);
+      iosTimer = setTimeout(() => setShowPrompt(true), 3000);
     }
 
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstall);
+      if (iosTimer) clearTimeout(iosTimer);
     };
   }, []);
 

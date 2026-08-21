@@ -40,9 +40,27 @@ const STORAGE_KEYS = {
 
 type Listener = () => void;
 
+// ---------------------------------------------------------------------------
+// RawRider: the shape stored in localStorage — no joined `profile` field.
+// ---------------------------------------------------------------------------
+type RawRider = Omit<Rider, 'profile'>;
+
 class MockDataStore {
-  private listeners: Set<Listener> = new Set();
+  private listeners = new Set<Listener>();
   private broadcastChannel: BroadcastChannel | null = null;
+
+  // -------------------------------------------------------------------------
+  // FIX INEFFICIENCY 1: in-memory caches — avoids redundant JSON.parse calls.
+  // Each cache is invalidated (set to null) whenever the corresponding key is
+  // written, so reads always see the latest data without repeated parsing.
+  // -------------------------------------------------------------------------
+  private _profilesCache: Profile[] | null = null;
+  private _rawRidersCache: RawRider[] | null = null;
+  private _deliveriesCache: Delivery[] | null = null;
+  private _messagesCache: ChatMessage[] | null = null;
+  private _threadsCache: ChatThread[] | null = null;
+  private _ratingsCache: Rating[] | null = null;
+  private _historyCache: DeliveryStatusHistory[] | null = null;
 
   constructor() {
     this.initializeData();
@@ -50,6 +68,8 @@ class MockDataStore {
       try {
         this.broadcastChannel = new BroadcastChannel('delivery_tracker_sync');
         this.broadcastChannel.onmessage = () => {
+          // Remote tab wrote something — invalidate all caches.
+          this.invalidateAllCaches();
           this.notifyLocal();
         };
       } catch (e) {
@@ -58,10 +78,25 @@ class MockDataStore {
     }
   }
 
+  // -------------------------------------------------------------------------
+  // Cache helpers
+  // -------------------------------------------------------------------------
+  private invalidateAllCaches() {
+    this._profilesCache = null;
+    this._rawRidersCache = null;
+    this._deliveriesCache = null;
+    this._messagesCache = null;
+    this._threadsCache = null;
+    this._ratingsCache = null;
+    this._historyCache = null;
+  }
+
   private initializeData() {
     if (typeof window === 'undefined' || typeof localStorage === 'undefined' || typeof localStorage.getItem !== 'function') return;
     if (!localStorage.getItem(STORAGE_KEYS.PROFILES)) {
-      localStorage.setItem(STORAGE_KEYS.PROFILES, JSON.stringify(INITIAL_PROFILES));
+      // FIX SECURITY: strip passwords before persisting to localStorage
+      const safeProfiles = INITIAL_PROFILES.map(({ password: _pw, ...rest }) => rest);
+      localStorage.setItem(STORAGE_KEYS.PROFILES, JSON.stringify(safeProfiles));
     }
     if (!localStorage.getItem(STORAGE_KEYS.RIDERS)) {
       localStorage.setItem(STORAGE_KEYS.RIDERS, JSON.stringify(INITIAL_RIDERS));
@@ -111,6 +146,7 @@ class MockDataStore {
     localStorage.removeItem(STORAGE_KEYS.CONFIRMATIONS);
     localStorage.removeItem(STORAGE_KEYS.AUDIT_LOG);
     localStorage.removeItem(STORAGE_KEYS.ONBOARDING);
+    this.invalidateAllCaches();
     this.initializeData();
     this.emitChange();
   }
@@ -127,6 +163,7 @@ class MockDataStore {
   }
 
   private emitChange() {
+    this.invalidateAllCaches();
     this.notifyLocal();
     try {
       this.broadcastChannel?.postMessage('update');
@@ -135,12 +172,17 @@ class MockDataStore {
     }
   }
 
-  // --- Profiles ---
+  // -------------------------------------------------------------------------
+  // Profiles
+  // -------------------------------------------------------------------------
   public getProfiles(): Profile[] {
+    if (this._profilesCache) return this._profilesCache;
     try {
-      return JSON.parse(localStorage.getItem(STORAGE_KEYS.PROFILES) || '[]');
+      this._profilesCache = JSON.parse(localStorage.getItem(STORAGE_KEYS.PROFILES) || '[]');
+      return this._profilesCache!;
     } catch {
-      return INITIAL_PROFILES;
+      this._profilesCache = INITIAL_PROFILES;
+      return this._profilesCache;
     }
   }
 
@@ -148,34 +190,80 @@ class MockDataStore {
     return this.getProfiles().find((p) => p.id === id);
   }
 
-  // --- Riders ---
-  public getRiders(): Rider[] {
+  // SEC-3 / STRUCT-1 FIX: public write helpers so AuthContext and other callers
+  // never touch localStorage keys or cache fields directly.
+  public addProfile(profile: Profile): void {
+    const profiles = this.getProfiles();
+    profiles.push(profile);
+    localStorage.setItem(STORAGE_KEYS.PROFILES, JSON.stringify(profiles));
+    this._profilesCache = null;
+    this.emitChange();
+  }
+
+  public addRawRider(raw: Omit<Rider, 'profile'>): void {
+    const riders = this.getRawRiders();
+    riders.push(raw);
+    this.saveRawRiders(riders);
+    this.emitChange();
+  }
+
+  public addCustomer(customer: Customer): void {
     try {
-      const riders: Rider[] = JSON.parse(localStorage.getItem(STORAGE_KEYS.RIDERS) || '[]');
-      const profiles = this.getProfiles();
-      return riders.map((r) => ({
-        ...r,
-        profile: profiles.find((p) => p.id === r.user_id),
-      }));
+      const customers: Customer[] = JSON.parse(localStorage.getItem(STORAGE_KEYS.CUSTOMERS) || '[]');
+      customers.push(customer);
+      localStorage.setItem(STORAGE_KEYS.CUSTOMERS, JSON.stringify(customers));
+      this.emitChange();
     } catch {
-      return INITIAL_RIDERS;
+      // ignore
     }
+  }
+
+  // -------------------------------------------------------------------------
+  // FIX BUG 1: Raw riders — always read/write the un-joined shape from storage.
+  // -------------------------------------------------------------------------
+  private getRawRiders(): RawRider[] {
+    if (this._rawRidersCache) return this._rawRidersCache;
+    try {
+      this._rawRidersCache = JSON.parse(localStorage.getItem(STORAGE_KEYS.RIDERS) || '[]');
+      return this._rawRidersCache!;
+    } catch {
+      return INITIAL_RIDERS as RawRider[];
+    }
+  }
+
+  private saveRawRiders(raw: RawRider[]): void {
+    this._rawRidersCache = raw;
+    localStorage.setItem(STORAGE_KEYS.RIDERS, JSON.stringify(raw));
+  }
+
+  // Public joined getter — safe to call from UI.
+  public getRiders(): Rider[] {
+    const raw = this.getRawRiders();
+    const profiles = this.getProfiles();
+    return raw.map((r) => ({
+      ...r,
+      profile: profiles.find((p) => p.id === r.user_id),
+    }));
   }
 
   public getRiderById(userId: string): Rider | undefined {
     return this.getRiders().find((r) => r.user_id === userId);
   }
 
+  // FIX BUG 1: operate on raw riders, not joined objects.
   public setRiderOnlineStatus(userId: string, isOnline: boolean): void {
-    const riders = this.getRiders();
-    const updated = riders.map((r) => (r.user_id === userId ? { ...r, is_online: isOnline, updated_at: new Date().toISOString() } : r));
-    localStorage.setItem(STORAGE_KEYS.RIDERS, JSON.stringify(updated));
+    const raw = this.getRawRiders();
+    const updated = raw.map((r) =>
+      r.user_id === userId ? { ...r, is_online: isOnline, updated_at: new Date().toISOString() } : r
+    );
+    this.saveRawRiders(updated);
     this.emitChange();
   }
 
+  // FIX BUG 1: operate on raw riders, not joined objects.
   public updateRiderLocation(userId: string, lat: number, lng: number): void {
-    const riders = this.getRiders();
-    const updated = riders.map((r) =>
+    const raw = this.getRawRiders();
+    const updated = raw.map((r) =>
       r.user_id === userId
         ? {
             ...r,
@@ -186,18 +274,21 @@ class MockDataStore {
           }
         : r
     );
-    localStorage.setItem(STORAGE_KEYS.RIDERS, JSON.stringify(updated));
+    this.saveRawRiders(updated);
     this.emitChange();
   }
 
-  // --- Deliveries ---
+  // -------------------------------------------------------------------------
+  // Deliveries
+  // -------------------------------------------------------------------------
   public getDeliveries(): Delivery[] {
+    if (this._deliveriesCache) return this._deliveriesCache;
     try {
       const deliveries: Delivery[] = JSON.parse(localStorage.getItem(STORAGE_KEYS.DELIVERIES) || '[]');
       const profiles = this.getProfiles();
       const riders = this.getRiders();
 
-      return deliveries.map((d) => {
+      this._deliveriesCache = deliveries.map((d) => {
         const custProfile = profiles.find((p) => p.id === d.customer_id);
         const riderProfile = d.rider_id ? profiles.find((p) => p.id === d.rider_id) : undefined;
         const riderInfo = d.rider_id ? riders.find((r) => r.user_id === d.rider_id) : undefined;
@@ -208,6 +299,7 @@ class MockDataStore {
           rider: riderProfile ? { ...riderProfile, rider_info: riderInfo } : undefined,
         };
       });
+      return this._deliveriesCache;
     } catch {
       return INITIAL_DELIVERIES;
     }
@@ -215,6 +307,13 @@ class MockDataStore {
 
   public getDeliveryById(id: string): Delivery | undefined {
     return this.getDeliveries().find((d) => d.id === id);
+  }
+
+  private saveRawDeliveries(deliveries: Delivery[]): void {
+    // Strip joined fields before persisting
+    const raw = deliveries.map(({ customer: _c, rider: _r, ...rest }) => rest);
+    localStorage.setItem(STORAGE_KEYS.DELIVERIES, JSON.stringify(raw));
+    this._deliveriesCache = null;
   }
 
   public updateDeliveryStatus(
@@ -234,15 +333,21 @@ class MockDataStore {
         updated_at: now,
       };
 
-      if (status === 'assigned' && !d.assigned_at) patch.assigned_at = now;
-      if (status === 'accepted' && !d.accepted_at) patch.accepted_at = now;
-      if (status === 'picked_up' && !d.picked_up_at) patch.picked_up_at = now;
-      if (status === 'delivered' && !d.delivered_at) patch.delivered_at = now;
+      if (status === 'pending') {
+        // Decline or return to queue: clear assignment
+        patch.rider_id = undefined;
+        patch.assigned_at = undefined;
+      } else {
+        if (status === 'assigned' && !d.assigned_at) patch.assigned_at = now;
+        if (status === 'accepted' && !d.accepted_at) patch.accepted_at = now;
+        if (status === 'picked_up' && !d.picked_up_at) patch.picked_up_at = now;
+        if (status === 'delivered' && !d.delivered_at) patch.delivered_at = now;
+      }
 
       return { ...d, ...patch };
     });
 
-    localStorage.setItem(STORAGE_KEYS.DELIVERIES, JSON.stringify(updated));
+    this.saveRawDeliveries(updated);
 
     // Record in history
     this.addStatusHistory(deliveryId, status, changedById, note || `Status updated to ${status}`);
@@ -272,11 +377,12 @@ class MockDataStore {
       };
     });
 
-    localStorage.setItem(STORAGE_KEYS.DELIVERIES, JSON.stringify(updated));
+    this.saveRawDeliveries(updated);
     this.addStatusHistory(deliveryId, 'assigned', adminId, `Manually assigned to rider ${rider?.full_name || riderId}`);
-    
+
     // Create/activate chat thread between rider and customer
-    this.getOrCreateChatThread('rider_customer', deliveryId, riderId, updated.find(d => d.id === deliveryId)?.customer_id || '');
+    const delivery = updated.find((d) => d.id === deliveryId);
+    this.getOrCreateChatThread('rider_customer', deliveryId, riderId, delivery?.customer_id || '');
 
     // Record audit log
     this.addAuditLog(adminId, 'ASSIGN_DELIVERY', 'deliveries', deliveryId, { rider_id: riderId });
@@ -310,13 +416,15 @@ class MockDataStore {
     };
 
     deliveries.unshift(newDelivery);
-    localStorage.setItem(STORAGE_KEYS.DELIVERIES, JSON.stringify(deliveries));
+    this.saveRawDeliveries(deliveries);
     this.addStatusHistory(newDelivery.id, newDelivery.status, newDelivery.customer_id, 'Delivery created');
     this.emitChange();
     return newDelivery;
   }
 
-  // --- Handover Acknowledgement ---
+  // -------------------------------------------------------------------------
+  // Handover Acknowledgement
+  // -------------------------------------------------------------------------
   public addAcknowledgement(deliveryId: string, riderId: string, photoUrl?: string, notes?: string): void {
     try {
       const acks: DeliveryAcknowledgement[] = JSON.parse(localStorage.getItem(STORAGE_KEYS.ACKNOWLEDGMENTS) || '[]');
@@ -345,7 +453,9 @@ class MockDataStore {
     }
   }
 
-  // --- Receipt Confirmations ---
+  // -------------------------------------------------------------------------
+  // Receipt Confirmations
+  // -------------------------------------------------------------------------
   public confirmReceipt(
     deliveryId: string,
     source: 'customer_app' | 'rider_on_behalf',
@@ -386,19 +496,25 @@ class MockDataStore {
     }
   }
 
-  // --- Status History ---
+  // -------------------------------------------------------------------------
+  // Status History
+  // -------------------------------------------------------------------------
   public getStatusHistory(deliveryId?: string): DeliveryStatusHistory[] {
-    try {
-      const history: DeliveryStatusHistory[] = JSON.parse(localStorage.getItem(STORAGE_KEYS.HISTORY) || '[]');
-      const profiles = this.getProfiles();
-      const mapped = history.map((h) => ({
-        ...h,
-        changer: profiles.find((p) => p.id === h.changed_by),
-      }));
-      return deliveryId ? mapped.filter((h) => h.delivery_id === deliveryId) : mapped;
-    } catch {
-      return INITIAL_STATUS_HISTORY;
+    if (!this._historyCache) {
+      try {
+        const history: DeliveryStatusHistory[] = JSON.parse(localStorage.getItem(STORAGE_KEYS.HISTORY) || '[]');
+        const profiles = this.getProfiles();
+        this._historyCache = history.map((h) => ({
+          ...h,
+          changer: profiles.find((p) => p.id === h.changed_by),
+        }));
+      } catch {
+        this._historyCache = INITIAL_STATUS_HISTORY;
+      }
     }
+    return deliveryId
+      ? this._historyCache!.filter((h) => h.delivery_id === deliveryId)
+      : this._historyCache!;
   }
 
   private addStatusHistory(deliveryId: string, status: DeliveryStatus, changedBy: string, note?: string): void {
@@ -413,78 +529,107 @@ class MockDataStore {
         created_at: new Date().toISOString(),
       });
       localStorage.setItem(STORAGE_KEYS.HISTORY, JSON.stringify(history));
+      this._historyCache = null;
     } catch {
       // ignore
     }
   }
 
-  // --- Chat Threads & Messages ---
+  // -------------------------------------------------------------------------
+  // Chat Threads & Messages
+  // -------------------------------------------------------------------------
   public getChatThreads(userId?: string): ChatThread[] {
-    try {
-      const threads: ChatThread[] = JSON.parse(localStorage.getItem(STORAGE_KEYS.THREADS) || '[]');
-      const messages = this.getChatMessages();
-      const deliveries = this.getDeliveries();
+    if (!this._threadsCache) {
+      try {
+        const threads: ChatThread[] = JSON.parse(localStorage.getItem(STORAGE_KEYS.THREADS) || '[]');
+        const messages = this.getChatMessages();
+        const deliveries = this.getDeliveries();
 
-      return threads
-        .map((t) => {
+        this._threadsCache = threads.map((t) => {
           const threadMsgs = messages.filter((m) => m.thread_id === t.id);
           const lastMessage = threadMsgs[threadMsgs.length - 1];
-          const unreadCount = userId ? threadMsgs.filter((m) => m.sender_id !== userId && !m.read_at).length : 0;
           const delivery = t.delivery_id ? deliveries.find((d) => d.id === t.delivery_id) : undefined;
-
-          return {
-            ...t,
-            last_message: lastMessage,
-            unread_count: unreadCount,
-            delivery,
-          };
-        })
-        .filter((t) => {
-          if (!userId) return true;
-          // Filter scoped to user if applicable
-          if (t.delivery) {
-            return t.delivery.customer_id === userId || t.delivery.rider_id === userId || this.getProfileById(userId)?.role === 'admin';
-          }
-          return true;
+          return { ...t, last_message: lastMessage, delivery };
         });
-    } catch {
-      return INITIAL_CHAT_THREADS;
+      } catch {
+        this._threadsCache = INITIAL_CHAT_THREADS;
+      }
     }
+
+    return this._threadsCache!
+      .map((t) => ({
+        ...t,
+        // Compute unread count per-caller so it's not baked into the cache
+        unread_count: userId
+          ? this.getChatMessages(t.id).filter((m) => m.sender_id !== userId && !m.read_at).length
+          : 0,
+      }))
+      .filter((t) => {
+        if (!userId) return true;
+        if (t.delivery) {
+          return t.delivery.customer_id === userId || t.delivery.rider_id === userId || this.getProfileById(userId)?.role === 'admin';
+        }
+        return true;
+      });
   }
 
   public getChatMessages(threadId?: string): ChatMessage[] {
-    try {
-      const messages: ChatMessage[] = JSON.parse(localStorage.getItem(STORAGE_KEYS.MESSAGES) || '[]');
-      const profiles = this.getProfiles();
-      const mapped = messages.map((m) => ({
-        ...m,
-        sender: profiles.find((p) => p.id === m.sender_id),
-      }));
-      return threadId ? mapped.filter((m) => m.thread_id === threadId) : mapped;
-    } catch {
-      return INITIAL_CHAT_MESSAGES;
+    if (!this._messagesCache) {
+      try {
+        const messages: ChatMessage[] = JSON.parse(localStorage.getItem(STORAGE_KEYS.MESSAGES) || '[]');
+        const profiles = this.getProfiles();
+        this._messagesCache = messages.map((m) => ({
+          ...m,
+          sender: profiles.find((p) => p.id === m.sender_id),
+        }));
+      } catch {
+        this._messagesCache = INITIAL_CHAT_MESSAGES;
+      }
     }
+    return threadId
+      ? this._messagesCache!.filter((m) => m.thread_id === threadId)
+      : this._messagesCache!;
   }
 
-  public getOrCreateChatThread(type: 'admin_rider' | 'rider_customer', deliveryId: string | null, userAId: string, userBId: string): ChatThread {
+  // FIX BUG 3: admin_rider threads are now keyed by (type, userAId, userBId)
+  // so each rider/admin pair gets their own unique channel.
+  public getOrCreateChatThread(
+    type: 'admin_rider' | 'rider_customer',
+    deliveryId: string | null,
+    userAId: string,
+    userBId: string
+  ): ChatThread {
     const threads: ChatThread[] = JSON.parse(localStorage.getItem(STORAGE_KEYS.THREADS) || '[]');
-    let existing = threads.find((t) => {
-      if (type === 'rider_customer') {
-        return t.type === 'rider_customer' && t.delivery_id === deliveryId;
-      }
-      return t.type === 'admin_rider';
-    });
+    let existing: ChatThread | undefined;
+
+    if (type === 'rider_customer') {
+      existing = threads.find((t) => t.type === 'rider_customer' && t.delivery_id === deliveryId);
+    } else {
+      // admin_rider: match both participants regardless of order
+      existing = threads.find(
+        (t) =>
+          t.type === 'admin_rider' &&
+          t.participant_a === userAId &&
+          t.participant_b === userBId ||
+          t.type === 'admin_rider' &&
+          t.participant_a === userBId &&
+          t.participant_b === userAId
+      );
+    }
 
     if (!existing) {
       existing = {
         id: `th-${Date.now()}`,
         type,
         delivery_id: deliveryId,
+        participant_a: userAId,
+        participant_b: userBId,
         is_active: true,
         created_at: new Date().toISOString(),
       };
       threads.push(existing);
       localStorage.setItem(STORAGE_KEYS.THREADS, JSON.stringify(threads));
+      this._threadsCache = null;
       this.emitChange();
     }
     return existing;
@@ -504,6 +649,7 @@ class MockDataStore {
 
     messages.push(newMsg);
     localStorage.setItem(STORAGE_KEYS.MESSAGES, JSON.stringify(messages));
+    this._messagesCache = null;
     this.emitChange();
     return newMsg;
   }
@@ -522,23 +668,28 @@ class MockDataStore {
 
     if (changed) {
       localStorage.setItem(STORAGE_KEYS.MESSAGES, JSON.stringify(updated));
+      this._messagesCache = null;
       this.emitChange();
     }
   }
 
-  // --- Ratings ---
+  // -------------------------------------------------------------------------
+  // Ratings
+  // -------------------------------------------------------------------------
   public getRatings(riderId?: string): Rating[] {
-    try {
-      const ratings: Rating[] = JSON.parse(localStorage.getItem(STORAGE_KEYS.RATINGS) || '[]');
-      const profiles = this.getProfiles();
-      const mapped = ratings.map((r) => ({
-        ...r,
-        customer: profiles.find((p) => p.id === r.customer_id),
-      }));
-      return riderId ? mapped.filter((r) => r.rider_id === riderId) : mapped;
-    } catch {
-      return INITIAL_RATINGS;
+    if (!this._ratingsCache) {
+      try {
+        const ratings: Rating[] = JSON.parse(localStorage.getItem(STORAGE_KEYS.RATINGS) || '[]');
+        const profiles = this.getProfiles();
+        this._ratingsCache = ratings.map((r) => ({
+          ...r,
+          customer: profiles.find((p) => p.id === r.customer_id),
+        }));
+      } catch {
+        this._ratingsCache = INITIAL_RATINGS;
+      }
     }
+    return riderId ? this._ratingsCache!.filter((r) => r.rider_id === riderId) : this._ratingsCache!;
   }
 
   public getRatingForDelivery(deliveryId: string): Rating | undefined {
@@ -561,6 +712,7 @@ class MockDataStore {
 
     ratings.unshift(newRating);
     localStorage.setItem(STORAGE_KEYS.RATINGS, JSON.stringify(ratings));
+    this._ratingsCache = null;
 
     // Recalculate rider statistics
     this.recalculateRiderStats(riderId);
@@ -578,10 +730,9 @@ class MockDataStore {
       avg = Math.round((sum / ratings.length) * 10) / 10;
     }
 
-    // Bug 10 fix: read from the RAW riders store (no joined profile), update,
-    // and write back so we never bake the joined `profile` field into storage.
-    const rawRiders = JSON.parse(localStorage.getItem(STORAGE_KEYS.RIDERS) || '[]');
-    const updated = rawRiders.map((r: Rider) =>
+    // Always operate on the raw (un-joined) riders array
+    const raw = this.getRawRiders();
+    const updated = raw.map((r) =>
       r.user_id === riderId
         ? {
             ...r,
@@ -591,10 +742,12 @@ class MockDataStore {
           }
         : r
     );
-    localStorage.setItem(STORAGE_KEYS.RIDERS, JSON.stringify(updated));
+    this.saveRawRiders(updated);
   }
 
-  // --- Onboarding Status ---
+  // -------------------------------------------------------------------------
+  // Onboarding Status
+  // -------------------------------------------------------------------------
   public hasSeenOnboarding(userId: string): boolean {
     try {
       const statusMap = JSON.parse(localStorage.getItem(STORAGE_KEYS.ONBOARDING) || '{}');
@@ -615,7 +768,9 @@ class MockDataStore {
     }
   }
 
-  // --- Audit Log ---
+  // -------------------------------------------------------------------------
+  // Audit Log
+  // -------------------------------------------------------------------------
   public getAuditLogs(): AuditLog[] {
     try {
       const logs: AuditLog[] = JSON.parse(localStorage.getItem(STORAGE_KEYS.AUDIT_LOG) || '[]');

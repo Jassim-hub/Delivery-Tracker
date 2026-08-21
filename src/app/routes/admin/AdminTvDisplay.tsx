@@ -42,10 +42,15 @@ export const AdminTvDisplay: React.FC = () => {
     };
   }, []);
 
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0);
+
   const onlineRiders = riders.filter((r) => r.is_online);
   const inTransitDeliveries = deliveries.filter((d) => ['in_transit', 'picked_up'].includes(d.status));
   const pendingDeliveries = deliveries.filter((d) => d.status === 'pending');
-  const deliveredList = deliveries.filter((d) => d.status === 'delivered');
+  const deliveredList = deliveries.filter(
+    (d) => d.status === 'delivered' && d.delivered_at && new Date(d.delivered_at) >= todayStart
+  );
 
   return (
     <div className="min-h-screen bg-slate-950 text-white p-6 select-none flex flex-col justify-between">

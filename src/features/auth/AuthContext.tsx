@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Profile, Role } from '@/types';
 import { mockStore } from '@/lib/supabase/mock-store';
 import { supabase, isUsingMockBackend } from '@/lib/supabase/client';
+import { INITIAL_PROFILES } from '@/lib/supabase/mock-data';
 
 interface AuthContextType {
   user: Profile | null;
@@ -27,6 +28,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Load initial profiles
     const allProfiles = mockStore.getProfiles();
     setProfiles(allProfiles);
+
+    // Subscribe to profile changes (e.g., new signup)
+    const unsubscribeProfiles = mockStore.subscribe(() => {
+      setProfiles(mockStore.getProfiles());
+    });
 
     if (isUsingMockBackend) {
       const savedUserId = localStorage.getItem(CURRENT_USER_KEY);
@@ -77,8 +83,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       return () => {
         authListener.subscription.unsubscribe();
+        unsubscribeProfiles();
       };
     }
+
+    return () => {
+      unsubscribeProfiles();
+    };
   }, []);
 
   const loginAs = (profileId: string) => {
@@ -92,9 +103,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const loginWithEmail = async (email: string, password?: string): Promise<{ error?: string }> => {
     if (isUsingMockBackend) {
-      const allProfiles = mockStore.getProfiles();
-      // Bug 3 fix: exact email + password match — no fuzzy name/role shortcuts
-      const match = allProfiles.find(
+      // Passwords are no longer stored in localStorage (security fix).
+      // Compare against the in-memory INITIAL_PROFILES seed list instead.
+      const match = INITIAL_PROFILES.find(
         (p) => p.email?.toLowerCase() === email.toLowerCase() && p.password === password
       );
       if (match) {
@@ -123,17 +134,36 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     role: 'rider' | 'customer',
     password?: string,
   ): Promise<{ error?: string }> => {
+    if (!isUsingMockBackend) {
+      // Live Supabase signup
+      try {
+        const { error } = await supabase.auth.signUp({
+          email,
+          password: password || 'password123',
+          options: { data: { full_name: fullName, role } },
+        });
+        if (error) return { error: error.message };
+        return {};
+      } catch (err: any) {
+        return { error: err.message || 'Signup failed' };
+      }
+    }
+
+    // ---- Mock-mode signup ----
     // Check for duplicate email
     const existingProfiles = mockStore.getProfiles();
     if (email && existingProfiles.some((p) => p.email?.toLowerCase() === email.toLowerCase())) {
       return { error: 'An account with that email already exists.' };
     }
 
+    // SEC-2 FIX: never store passwords in localStorage. The password field
+    // only lives in INITIAL_PROFILES in memory for demo login. New mock
+    // accounts are recognised via their id in localStorage, not password.
     const newProfile: Profile = {
       id: `${role[0]}${Date.now().toString().slice(-11)}`,
       full_name: fullName,
       email,
-      password: password || 'password123',
+      // password intentionally omitted — not stored on disk
       phone,
       role,
       avatar_url: `https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150`,
@@ -141,13 +171,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       updated_at: new Date().toISOString(),
     };
 
-    existingProfiles.push(newProfile);
-    localStorage.setItem('dt_profiles_v1', JSON.stringify(existingProfiles));
+    // SEC-3 / STRUCT-1 FIX: route ALL writes through mockStore so caches stay
+    // consistent and magic localStorage key strings are in one place only.
+    mockStore.addProfile(newProfile);
 
     if (role === 'rider') {
-      // getRiders() returns joined objects — strip profile join before saving
-      const rawRiders = JSON.parse(localStorage.getItem('dt_riders_v1') || '[]');
-      rawRiders.push({
+      mockStore.addRawRider({
         user_id: newProfile.id,
         vehicle_type: 'Motorcycle',
         license_plate: 'UAA 100A',
@@ -160,11 +189,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       });
-      localStorage.setItem('dt_riders_v1', JSON.stringify(rawRiders));
     } else {
-      // Bug 2 fix: write a proper Customer row for the new customer profile
-      const rawCustomers = JSON.parse(localStorage.getItem('dt_customers_v1') || '[]');
-      rawCustomers.push({
+      mockStore.addCustomer({
         user_id: newProfile.id,
         default_address: null,
         default_lat: null,
@@ -172,7 +198,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       });
-      localStorage.setItem('dt_customers_v1', JSON.stringify(rawCustomers));
     }
 
     loginAs(newProfile.id);

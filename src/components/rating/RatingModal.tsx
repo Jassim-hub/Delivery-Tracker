@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { mockStore } from '@/lib/supabase/mock-store';
@@ -40,6 +40,19 @@ export const RatingModal: React.FC<RatingModalProps> = ({
   const [selectedTags, setSelectedTags] = useState<string[]>(['⚡ On time', '😊 Friendly']);
   const [comment, setComment] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [hasExistingRating, setHasExistingRating] = useState(false);
+
+  // Reset form when modal opens for a new delivery
+  useEffect(() => {
+    if (isOpen) {
+      setStars(5);
+      setHoveredStars(0);
+      setSelectedTags(['⚡ On time', '😊 Friendly']);
+      setComment('');
+      setIsSubmitting(false);
+      setHasExistingRating(!!mockStore.getRatingForDelivery(deliveryId));
+    }
+  }, [isOpen, deliveryId]);
 
   const toggleTag = (tag: string) => {
     if (selectedTags.includes(tag)) {
@@ -51,6 +64,7 @@ export const RatingModal: React.FC<RatingModalProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (hasExistingRating) return;
     setIsSubmitting(true);
 
     // Save rating into mockStore / Supabase
@@ -76,6 +90,7 @@ export const RatingModal: React.FC<RatingModalProps> = ({
     }
 
     setIsSubmitting(false);
+    setHasExistingRating(true);
     onSubmitted?.();
     onClose();
   };
@@ -179,9 +194,9 @@ export const RatingModal: React.FC<RatingModalProps> = ({
           <Button type="button" variant="ghost" size="sm" onClick={onClose}>
             Skip for now
           </Button>
-          <Button type="submit" variant="accent" size="sm" isLoading={isSubmitting} className="font-bold">
+          <Button type="submit" variant="accent" size="sm" isLoading={isSubmitting} disabled={hasExistingRating} className="font-bold">
             <Sparkles className="w-3.5 h-3.5 mr-1" />
-            Submit Rating
+            {hasExistingRating ? 'Already Rated' : 'Submit Rating'}
           </Button>
         </div>
       </form>

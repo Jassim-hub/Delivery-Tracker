@@ -85,11 +85,14 @@ CREATE POLICY "deliveries_select_scoped" ON public.deliveries
 CREATE POLICY "deliveries_insert_admin_only" ON public.deliveries
     FOR INSERT WITH CHECK (public.is_admin());
 
+-- SEC-9 FIX: The original policy allowed any authenticated user to UPDATE a
+-- pending+unassigned delivery (effectively letting any rider self-assign any
+-- order without going through the dispatcher). Removed that clause — only the
+-- assigned rider or an admin may mutate a delivery row.
 CREATE POLICY "deliveries_update_rider_or_admin" ON public.deliveries
     FOR UPDATE USING (
         public.is_admin() OR
-        rider_id = auth.uid() OR
-        (status = 'pending' AND rider_id IS NULL)
+        rider_id = auth.uid()
     );
 
 -- ------------------------------------------------------------------------------
@@ -206,8 +209,11 @@ CREATE POLICY "notifications_select_own" ON public.notifications
 CREATE POLICY "notifications_update_own" ON public.notifications
     FOR UPDATE USING (user_id = auth.uid());
 
+-- SEC-10 FIX: was WITH CHECK (true) — any authenticated user could insert a
+-- notification for any other user. Restricted to admin + service-role callers.
+-- Service role bypasses RLS entirely, so this locks down normal auth clients.
 CREATE POLICY "notifications_insert_admin_or_system" ON public.notifications
-    FOR INSERT WITH CHECK (true);
+    FOR INSERT WITH CHECK (public.is_admin());
 
 -- ------------------------------------------------------------------------------
 -- 12. Onboarding Status Policies

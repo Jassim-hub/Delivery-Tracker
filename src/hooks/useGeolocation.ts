@@ -31,12 +31,48 @@ export function useGeolocation(options: UseGeolocationOptions = {}) {
 
   useEffect(() => {
     let watchId: number | null = null;
-    let simInterval: any = null;
+    let simInterval: ReturnType<typeof setInterval> | null = null;
+
+    function stopSimulation() {
+      if (simInterval !== null) {
+        clearInterval(simInterval);
+        simInterval = null;
+      }
+    }
+
+    function startSimulation() {
+      if (simInterval !== null) return; // already running
+      setIsSimulating(true);
+      const startLat = 0.3150;
+      const startLng = 32.5980;
+      const destLat = targetDestination?.lat || 0.3312;
+      const destLng = targetDestination?.lng || 32.5875;
+
+      simInterval = setInterval(() => {
+        simStepRef.current = (simStepRef.current + 1) % 100;
+        const progress = simStepRef.current / 100;
+
+        // Smooth wave path toward destination
+        const lat = startLat + (destLat - startLat) * progress + Math.sin(progress * Math.PI * 4) * 0.0008;
+        const lng = startLng + (destLng - startLng) * progress + Math.cos(progress * Math.PI * 4) * 0.0008;
+
+        setLocation({
+          lat,
+          lng,
+          accuracy: 5,
+          heading: 35,
+          speed: 6.2 * speedMultiplier,
+          timestamp: Date.now(),
+        });
+      }, 3000);
+    }
 
     // Check if Geolocation is available
     if (typeof window !== 'undefined' && 'geolocation' in navigator) {
       watchId = navigator.geolocation.watchPosition(
         (pos) => {
+          // FIX BUG 6: native GPS succeeded — stop any running simulation.
+          stopSimulation();
           setLocation({
             lat: pos.coords.latitude,
             lng: pos.coords.longitude,
@@ -66,39 +102,11 @@ export function useGeolocation(options: UseGeolocationOptions = {}) {
       startSimulation();
     }
 
-    function startSimulation() {
-      setIsSimulating(true);
-      const startLat = 0.3150;
-      const startLng = 32.5980;
-      const destLat = targetDestination?.lat || 0.3312;
-      const destLng = targetDestination?.lng || 32.5875;
-
-      simInterval = setInterval(() => {
-        simStepRef.current = (simStepRef.current + 1) % 100;
-        const progress = simStepRef.current / 100;
-
-        // Smooth wave path toward destination
-        const lat = startLat + (destLat - startLat) * progress + Math.sin(progress * Math.PI * 4) * 0.0008;
-        const lng = startLng + (destLng - startLng) * progress + Math.cos(progress * Math.PI * 4) * 0.0008;
-
-        setLocation({
-          lat,
-          lng,
-          accuracy: 5,
-          heading: 35,
-          speed: 6.2 * speedMultiplier,
-          timestamp: Date.now(),
-        });
-      }, 3000);
-    }
-
     return () => {
       if (watchId !== null && 'geolocation' in navigator) {
         navigator.geolocation.clearWatch(watchId);
       }
-      if (simInterval) {
-        clearInterval(simInterval);
-      }
+      stopSimulation();
     };
   }, [enableHighAccuracy, enableSimulationIfDesktop, targetDestination?.lat, targetDestination?.lng, speedMultiplier]);
 

@@ -1,11 +1,15 @@
 import { Profile, Rider, Customer, Delivery, ChatThread, ChatMessage, Rating, DeliveryStatusHistory } from '@/types';
 
+// SEC-1 FIX: Replaced all real personal email addresses with generic demo addresses
+// and replaced all plain-text passwords with demo-safe values. The password field is
+// only ever read by the in-memory loginWithEmail() check — it is never persisted to
+// localStorage. Real credentials must live in Supabase auth only (see seed.sql).
 export const INITIAL_PROFILES: Profile[] = [
   {
     id: 'a0000000-0000-0000-0000-000000000001',
     full_name: 'Kasule Jassim',
-    email: 'jassimkasule@gmail.com',
-    password: 'jassim2024',
+    email: 'admin@deliverytracker.com',
+    password: 'Admin@Demo2024!',
     phone: '+256 700 112 233',
     role: 'admin',
     // Drop your photo at public/avatars/jassim.jpg to replace this
@@ -16,8 +20,8 @@ export const INITIAL_PROFILES: Profile[] = [
   {
     id: 'b0000000-0000-0000-0000-000000000001',
     full_name: 'Yawe Ivan',
-    email: 'yaweivan3@gmail.com',
-    password: 'ivan2024',
+    email: 'ivan.rider@deliverytracker.com',
+    password: 'Rider@Demo2024!',
     phone: '+256 772 123 456',
     role: 'rider',
     // Drop your photo at public/avatars/ivan.jpg to replace this
@@ -28,8 +32,8 @@ export const INITIAL_PROFILES: Profile[] = [
   {
     id: 'b0000000-0000-0000-0000-000000000002',
     full_name: 'Mugabi Kevin',
-    email: 'bladeimmy09@gmail.com',
-    password: 'kevin2024',
+    email: 'kevin.rider@deliverytracker.com',
+    password: 'Rider@Demo2024!',
     phone: '+256 782 987 654',
     role: 'rider',
     // Drop your photo at public/avatars/kevin.jpg to replace this
@@ -40,8 +44,8 @@ export const INITIAL_PROFILES: Profile[] = [
   {
     id: 'b0000000-0000-0000-0000-000000000003',
     full_name: 'Tendo Brian',
-    email: 'brian@dt.com',
-    password: 'brian2024',
+    email: 'brian.rider@deliverytracker.com',
+    password: 'Rider@Demo2024!',
     phone: '+256 701 456 789',
     role: 'rider',
     avatar_url: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150',
@@ -51,8 +55,8 @@ export const INITIAL_PROFILES: Profile[] = [
   {
     id: 'c0000000-0000-0000-0000-000000000001',
     full_name: 'David Kazibwe',
-    email: 'kazibwed499@gmail.com',
-    password: 'david2024',
+    email: 'david.customer@deliverytracker.com',
+    password: 'Customer@Demo2024!',
     phone: '+256 750 334 455',
     role: 'customer',
     // Drop your photo at public/avatars/david.jpg to replace this
@@ -63,8 +67,8 @@ export const INITIAL_PROFILES: Profile[] = [
   {
     id: 'c0000000-0000-0000-0000-000000000002',
     full_name: 'Nakato Aisha',
-    email: 'aisha@dt.com',
-    password: 'aisha2024',
+    email: 'aisha.customer@deliverytracker.com',
+    password: 'Customer@Demo2024!',
     phone: '+256 775 667 788',
     role: 'customer',
     avatar_url: 'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=150',
@@ -74,8 +78,8 @@ export const INITIAL_PROFILES: Profile[] = [
   {
     id: 'c0000000-0000-0000-0000-000000000003',
     full_name: 'Ouma Samuel',
-    email: 'samuel@dt.com',
-    password: 'samuel2024',
+    email: 'samuel.customer@deliverytracker.com',
+    password: 'Customer@Demo2024!',
     phone: '+256 702 889 900',
     role: 'customer',
     avatar_url: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150',

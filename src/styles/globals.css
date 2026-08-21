@@ -23,6 +23,20 @@
     --glass-blur: blur(10px);
   }
 
+  /* Dark mode CSS variable overrides */
+  .dark {
+    --color-bg: #030712;
+    --color-surface: #111827;
+    --color-text: #F9FAFB;
+    --color-text-muted: #9CA3AF;
+    --glass-bg: rgba(17, 24, 39, 0.75);
+    --glass-border: rgba(55, 65, 81, 0.5);
+    --shadow-card: 0 2px 10px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(0, 0, 0, 0.3);
+  }
+
+  html {
+    min-height: 100%;
+  }
   body {
     background-color: var(--color-bg);
     color: var(--color-text);
@@ -30,6 +44,9 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     min-height: 100vh;
+    min-height: 100dvh;
+    overscroll-behavior-y: none;
+    transition: background-color 0.2s ease, color 0.2s ease;
   }
 
   h1, h2, h3, h4, h5, h6 {

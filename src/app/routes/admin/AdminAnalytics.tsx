@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import {
   ResponsiveContainer,
@@ -15,7 +15,9 @@ import {
   Cell,
 } from 'recharts';
 import { BarChart3, TrendingUp, Star, Clock } from 'lucide-react';
+import { mockStore } from '@/lib/supabase/mock-store';
 
+// Static chart data — never changes at runtime.
 const DAILY_DELIVERIES_DATA = [
   { day: 'Mon', completed: 32, target: 30 },
   { day: 'Tue', completed: 45, target: 35 },
@@ -43,7 +45,69 @@ const RATINGS_DISTRIBUTION = [
   { stars: '1 Star', count: 1, color: '#D64545' },
 ];
 
+// FIX INEFFICIENCY 4: derive live KPI metrics from actual mock store data.
+function useAnalyticsMetrics() {
+  const [metrics, setMetrics] = useState(() => computeMetrics());
+
+  useEffect(() => {
+    const unsubscribe = mockStore.subscribe(() => setMetrics(computeMetrics()));
+    return () => unsubscribe();
+  }, []);
+
+  return metrics;
+}
+
+function computeMetrics() {
+  const deliveries = mockStore.getDeliveries();
+  const riders = mockStore.getRiders();
+  const ratings = mockStore.getRatings();
+
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0);
+
+  const weekStart = new Date();
+  weekStart.setDate(weekStart.getDate() - 7);
+  weekStart.setHours(0, 0, 0, 0);
+
+  const weeklyDeliveries = deliveries.filter(
+    (d) => d.status === 'delivered' && d.delivered_at && new Date(d.delivered_at) >= weekStart
+  );
+
+  const avgStars =
+    ratings.length > 0
+      ? Math.round((ratings.reduce((s, r) => s + r.stars, 0) / ratings.length) * 10) / 10
+      : 0;
+
+  // On-time: delivered before estimated_delivery_at
+  const onTimeCount = weeklyDeliveries.filter(
+    (d) => d.delivered_at && d.estimated_delivery_at && new Date(d.delivered_at) <= new Date(d.estimated_delivery_at)
+  ).length;
+  const onTimePct = weeklyDeliveries.length > 0
+    ? Math.round((onTimeCount / weeklyDeliveries.length) * 1000) / 10
+    : 100;
+
+  // Avg delivery duration in minutes (accepted → delivered)
+  const durationsMin = weeklyDeliveries
+    .filter((d) => d.accepted_at && d.delivered_at)
+    .map((d) => (new Date(d.delivered_at!).getTime() - new Date(d.accepted_at!).getTime()) / 60000);
+  const avgDuration =
+    durationsMin.length > 0
+      ? Math.round((durationsMin.reduce((s, v) => s + v, 0) / durationsMin.length) * 10) / 10
+      : 0;
+
+  return {
+    weeklyCount: weeklyDeliveries.length,
+    avgDuration,
+    avgStars,
+    onTimePct,
+    totalRiders: riders.length,
+  };
+}
+
 export const AdminAnalytics: React.FC = () => {
+  // FIX INEFFICIENCY 4: real live stats instead of hardcoded strings.
+  const metrics = useAnalyticsMetrics();
+
   return (
     <div className="space-y-6 pb-16">
       <div>
@@ -51,15 +115,15 @@ export const AdminAnalytics: React.FC = () => {
         <p className="text-xs text-muted">Fleet throughput, delivery duration latency, and customer satisfaction metrics</p>
       </div>
 
-      {/* Top Metric Cards */}
+      {/* Top Metric Cards — live data from mockStore */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <Card className="p-4 shadow-card bg-white">
           <div className="flex items-center justify-between text-muted text-xs font-bold uppercase">
             <span>Weekly Deliveries</span>
             <TrendingUp className="w-4 h-4 text-primary" />
           </div>
-          <div className="text-2xl font-black text-gray-900 mt-2">370</div>
-          <span className="text-[11px] text-emerald-600 font-semibold">+18.4% vs last week</span>
+          <div className="text-2xl font-black text-gray-900 mt-2">{metrics.weeklyCount}</div>
+          <span className="text-[11px] text-emerald-600 font-semibold">Last 7 days</span>
         </Card>
 
         <Card className="p-4 shadow-card bg-white">
@@ -67,8 +131,10 @@ export const AdminAnalytics: React.FC = () => {
             <span>Avg Delivery Duration</span>
             <Clock className="w-4 h-4 text-accent" />
           </div>
-          <div className="text-2xl font-black text-gray-900 mt-2">29.4 min</div>
-          <span className="text-[11px] text-emerald-600 font-semibold">-3.2 min faster</span>
+          <div className="text-2xl font-black text-gray-900 mt-2">
+            {metrics.avgDuration > 0 ? `${metrics.avgDuration} min` : '--'}
+          </div>
+          <span className="text-[11px] text-emerald-600 font-semibold">Accepted → Delivered</span>
         </Card>
 
         <Card className="p-4 shadow-card bg-white">
@@ -76,8 +142,10 @@ export const AdminAnalytics: React.FC = () => {
             <span>Fleet Satisfaction</span>
             <Star className="w-4 h-4 text-amber-500" />
           </div>
-          <div className="text-2xl font-black text-gray-900 mt-2">4.88 / 5.0</div>
-          <span className="text-[11px] text-emerald-600 font-semibold">97% positive tags</span>
+          <div className="text-2xl font-black text-gray-900 mt-2">
+            {metrics.avgStars > 0 ? `${metrics.avgStars} / 5.0` : '--'}
+          </div>
+          <span className="text-[11px] text-emerald-600 font-semibold">Customer ratings</span>
         </Card>
 
         <Card className="p-4 shadow-card bg-white">
@@ -85,7 +153,7 @@ export const AdminAnalytics: React.FC = () => {
             <span>On-Time SLA</span>
             <BarChart3 className="w-4 h-4 text-emerald-600" />
           </div>
-          <div className="text-2xl font-black text-gray-900 mt-2">98.2%</div>
+          <div className="text-2xl font-black text-gray-900 mt-2">{metrics.onTimePct}%</div>
           <span className="text-[11px] text-emerald-600 font-semibold">SLA Target 95%</span>
         </Card>
       </div>

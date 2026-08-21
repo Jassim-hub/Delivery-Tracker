@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/features/auth/AuthContext';
 import { mockStore } from '@/lib/supabase/mock-store';
+import { useToast } from '@/components/ui/Toast';
 import { Delivery, Rider } from '@/types';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -26,6 +27,7 @@ import { OnboardingCarousel } from '@/components/onboarding/OnboardingCarousel';
 
 export const RiderDashboard: React.FC = () => {
   const { user } = useAuth();
+  const { toast } = useToast();
   const navigate = useNavigate();
 
   const [riderInfo, setRiderInfo] = useState<Rider | undefined>(undefined);
@@ -73,18 +75,21 @@ export const RiderDashboard: React.FC = () => {
 
   const handleAcceptDelivery = (deliveryId: string) => {
     if (!user) return;
+    const del = deliveries.find((d) => d.id === deliveryId);
     mockStore.updateDeliveryStatus(deliveryId, 'accepted', user.id, 'Accepted by rider');
+    toast(`Accepted order ${del?.order_reference ?? ''} — navigate to pickup ✓`);
     navigate(`/rider/active/${deliveryId}`);
   };
 
   const handleDeclineDelivery = (deliveryId: string) => {
     if (!user) return;
-    // Revert to pending for re-dispatch
+    const del = deliveries.find((d) => d.id === deliveryId);
     mockStore.updateDeliveryStatus(deliveryId, 'pending', user.id, 'Declined by rider, returned to dispatch queue');
+    toast(`Order ${del?.order_reference ?? ''} returned to queue`, 'info');
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-[240px_minmax(0,1fr)_240px] gap-0 space-y-5 pb-12">
+    <div className="grid grid-cols-1 md:grid-cols-[240px_minmax(0,1fr)_240px] gap-x-0 gap-y-5 pb-28 sm:pb-12">
       <aside className="border-r border-sky-900/15 pr-4 bg-white/25 backdrop-blur-md min-h-full">
         {user && <OnboardingCarousel role="rider" userId={user.id} />}
       </aside>
@@ -253,7 +258,7 @@ export const RiderDashboard: React.FC = () => {
       </div>
 
       {/* Quick Navigation Footer Bar */}
-      <div className="fixed bottom-0 left-0 right-0 z-30 bg-surface/95 backdrop-blur-md border-t border-gray-200 p-2 sm:hidden flex items-center justify-around">
+      <div className="fixed bottom-0 left-0 right-0 z-30 bg-surface/95 backdrop-blur-md border-t border-gray-200 p-2 pb-safe-bottom sm:hidden flex items-center justify-around">
         <button
           onClick={() => navigate('/rider')}
           className="flex flex-col items-center gap-0.5 text-primary text-[10px] font-bold"

@@ -5,6 +5,8 @@ import { ProtectedRoute } from '@/features/auth/ProtectedRoute';
 import { RoleSwitcher } from '@/features/auth/RoleSwitcher';
 import { PwaInstallPrompt } from '@/components/pwa/PwaInstallPrompt';
 import { Navbar } from '@/app/routes/shared/Navbar';
+import { DarkModeProvider } from '@/features/theme/DarkModeContext';
+import { ToastProvider } from '@/components/ui/Toast';
 
 // Auth Pages
 import { LoginPage } from '@/app/routes/auth/LoginPage';
@@ -32,9 +34,9 @@ import { AdminTvDisplay } from '@/app/routes/admin/AdminTvDisplay';
 // App Layout with standard Navigation bar
 const AppLayout: React.FC = () => {
   return (
-    <div className="min-h-screen flex flex-col bg-sky-50 text-gray-900">
+    <div className="min-h-screen flex flex-col bg-sky-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 transition-colors duration-200">
       <Navbar />
-      <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
+      <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 md:ml-56">
         <Outlet />
       </main>
       <RoleSwitcher />
@@ -73,6 +75,8 @@ const RoleHomeRedirect: React.FC = () => {
 
 export const App: React.FC = () => {
   return (
+    <DarkModeProvider>
+    <ToastProvider>
     <BrowserRouter>
       <AuthProvider>
         <Routes>
@@ -203,5 +207,7 @@ export const App: React.FC = () => {
         </Routes>
       </AuthProvider>
     </BrowserRouter>
+    </ToastProvider>
+    </DarkModeProvider>
   );
 };

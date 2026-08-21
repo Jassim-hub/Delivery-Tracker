@@ -13,9 +13,9 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     
     const variants = {
       primary: 'bg-blue-700 text-white hover:bg-blue-800 shadow-sm border border-transparent',
-      accent: 'bg-accent text-gray-900 font-bold hover:bg-accent-hover shadow-sm hover:shadow-gold border border-transparent',
-      outline: 'border border-gray-200 bg-white hover:bg-page-bg text-gray-800 shadow-sm',
-      ghost: 'bg-transparent hover:bg-blue-50 text-gray-700 hover:text-blue-700',
+      accent: 'bg-accent text-gray-900 dark:text-gray-900 font-bold hover:bg-accent-hover shadow-sm hover:shadow-gold border border-transparent',
+      outline: 'border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:bg-page-bg dark:hover:bg-gray-700/50 text-gray-800 dark:text-gray-200 shadow-sm',
+      ghost: 'bg-transparent hover:bg-blue-50 dark:hover:bg-blue-900/20 text-gray-700 dark:text-gray-300 hover:text-blue-700',
       danger: 'bg-red-600 text-white hover:bg-red-700 shadow-sm border border-transparent',
       success: 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm border border-transparent',
     };

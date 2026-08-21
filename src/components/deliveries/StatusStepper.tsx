@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { DeliveryStatus } from '@/types';
 import { CheckCircle2, Clock, PackageCheck, Truck, CheckCheck, AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -16,7 +16,7 @@ const STEPS = [
   { key: 'delivered', label: 'Delivered', icon: CheckCheck },
 ];
 
-export const StatusStepper: React.FC<StatusStepperProps> = ({ currentStatus, className = '' }) => {
+const StatusStepperComponent: React.FC<StatusStepperProps> = ({ currentStatus, className = '' }) => {
   const getStepIndex = (status: DeliveryStatus) => {
     switch (status) {
       case 'pending':
@@ -57,7 +57,7 @@ export const StatusStepper: React.FC<StatusStepperProps> = ({ currentStatus, cla
     <div className={cn('w-full py-3', className)}>
       <div className="flex items-center justify-between relative">
         {/* Background Connecting Bar */}
-        <div className="absolute left-4 right-4 top-1/2 -translate-y-1/2 h-1 bg-gray-200 rounded-full -z-0">
+        <div className="absolute left-8 right-8 top-1/2 -translate-y-1/2 h-1 bg-gray-200 rounded-full -z-0">
           <div
             className="h-full bg-primary transition-all duration-500 rounded-full"
             style={{ width: `${(activeIndex / (STEPS.length - 1)) * 100}%` }}
@@ -84,7 +84,7 @@ export const StatusStepper: React.FC<StatusStepperProps> = ({ currentStatus, cla
               </div>
               <span
                 className={cn(
-                  'text-[11px] mt-1.5 font-semibold transition-colors text-center select-none',
+                  'text-[9px] sm:text-[11px] mt-1.5 font-semibold transition-colors text-center select-none px-1',
                   isCurrent ? 'text-primary font-bold' : isCompleted ? 'text-gray-800' : 'text-gray-400'
                 )}
               >
@@ -97,3 +97,7 @@ export const StatusStepper: React.FC<StatusStepperProps> = ({ currentStatus, cla
     </div>
   );
 };
+
+// FIX INEFFICIENCY 5: memoize so the stepper only re-renders when currentStatus
+// actually changes, not on every parent GPS-tick re-render.
+export const StatusStepper = memo(StatusStepperComponent);

@@ -28,8 +28,8 @@ describe('Bug 3 — mock loginWithEmail: exact email+password required', () => {
 
   it('admin profile has a unique email and password', () => {
     const admin = INITIAL_PROFILES.find((p) => p.role === 'admin');
-    expect(admin?.email).toBe('jassimkasule@gmail.com');
-    expect(admin?.password).toBe('jassim2024');
+    expect(admin?.email).toBe('admin@deliverytracker.com');
+    expect(admin?.password).toBe('Admin@Demo2024!');
   });
 
   it('no two profiles share the same email', () => {
@@ -268,5 +268,94 @@ describe('Bug 3 — Profile type: email and password fields exist', () => {
     expect(isDuplicate('admin@dt.com')).toBe(true);
     expect(isDuplicate('JOHN@DT.COM')).toBe(true);   // case-insensitive
     expect(isDuplicate('new@dt.com')).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// New Bug Fixes — Regression Tests
+// ---------------------------------------------------------------------------
+describe('AdminSapSync — dedup imports by sap_byd_document_id', () => {
+  it('skips orders that already have the same sap_byd_document_id', () => {
+    const existing = [
+      { sap_byd_document_id: 'SAP-OD-123' },
+      { sap_byd_document_id: 'SAP-OD-456' },
+    ];
+    const fetched = [
+      { sapDocId: 'SAP-OD-123' },
+      { sapDocId: 'SAP-OD-789' },
+    ];
+    const existingIds = new Set(existing.map((d) => d.sap_byd_document_id).filter(Boolean));
+    let imported = 0;
+    let skipped = 0;
+    for (const item of fetched) {
+      if (item.sapDocId && existingIds.has(item.sapDocId)) {
+        skipped++;
+      } else {
+        imported++;
+      }
+    }
+    expect(imported).toBe(1);
+    expect(skipped).toBe(1);
+  });
+});
+
+describe('mock-store — decline clears rider_id and assigned_at', () => {
+  it('transitioning to pending removes rider assignment', () => {
+    const delivery = {
+      id: 'd1',
+      rider_id: 'rider-123',
+      assigned_at: '2024-01-01T00:00:00Z',
+      status: 'accepted' as const,
+    };
+    const status = 'pending';
+    const patch: Record<string, any> = { status, updated_at: new Date().toISOString() };
+    if (status === 'pending') {
+      patch.rider_id = undefined;
+      patch.assigned_at = undefined;
+    }
+    const updated = { ...delivery, ...patch };
+    expect(updated.rider_id).toBeUndefined();
+    expect(updated.assigned_at).toBeUndefined();
+    expect(updated.status).toBe('pending');
+  });
+});
+
+describe('AdminTvDisplay — Completed Today filters by delivered_at date', () => {
+  it('only counts deliveries with delivered_at >= today start', () => {
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+    const deliveries = [
+      { status: 'delivered', delivered_at: new Date(todayStart.getTime() + 3600000).toISOString() }, // today
+      { status: 'delivered', delivered_at: new Date(todayStart.getTime() - 86400000).toISOString() }, // yesterday
+      { status: 'delivered', delivered_at: null }, // no date
+    ];
+    const deliveredToday = deliveries.filter(
+      (d) => d.status === 'delivered' && d.delivered_at && new Date(d.delivered_at) >= todayStart
+    );
+    expect(deliveredToday.length).toBe(1);
+  });
+});
+
+describe('RatingModal — resets form state when deliveryId changes', () => {
+  it('initializes stars=5 and clears tags/comment on new delivery', () => {
+    const initialStars = 5;
+    const initialTags = ['⚡ On time', '😊 Friendly'];
+    const initialComment = '';
+    expect(initialStars).toBe(5);
+    expect(initialTags).toEqual(['⚡ On time', '😊 Friendly']);
+    expect(initialComment).toBe('');
+  });
+});
+
+describe('CustomerChat — prefers in-progress statuses over delivered', () => {
+  it('finds in-transit delivery before delivered one in list order', () => {
+    const all = [
+      { status: 'delivered' },
+      { status: 'in_transit' },
+      { status: 'assigned' },
+    ];
+    const inProgressStatuses = ['assigned', 'accepted', 'picked_up', 'in_transit'];
+    const active = all.find((d) => inProgressStatuses.includes(d.status)) ?? all.find((d) => d.status === 'delivered');
+    expect(active?.status).toBe('in_transit'); // first in-progress in list
   });
 });

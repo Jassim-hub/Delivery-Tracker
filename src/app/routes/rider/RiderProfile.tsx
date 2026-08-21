@@ -5,6 +5,7 @@ import { Rider, Rating } from '@/types';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { InitialsAvatar } from '@/components/ui/InitialsAvatar';
 import { Star, Bike, CheckCircle2, Award, Clock, HelpCircle, Shield } from 'lucide-react';
 import { formatDateTime } from '@/lib/utils';
 import { OnboardingCarousel } from '@/components/onboarding/OnboardingCarousel';
@@ -15,20 +16,15 @@ export const RiderProfile: React.FC = () => {
   const [ratings, setRatings] = useState<Rating[]>([]);
   const [showTutorialAgain, setShowTutorialAgain] = useState(false);
 
-  const loadData = () => {
-    if (!user) return;
-    const r = mockStore.getRiderById(user.id);
-    setRider(r);
-
-    const rts = mockStore.getRatings(user.id);
-    setRatings(rts);
-  };
-
+  // Bug 13 fix: fetch logic inside the effect — same stale-closure pattern fixed elsewhere
   useEffect(() => {
+    const loadData = () => {
+      if (!user) return;
+      setRider(mockStore.getRiderById(user.id));
+      setRatings(mockStore.getRatings(user.id));
+    };
     loadData();
-    const unsubscribe = mockStore.subscribe(() => {
-      loadData();
-    });
+    const unsubscribe = mockStore.subscribe(loadData);
     return () => unsubscribe();
   }, [user?.id]);
 
@@ -48,10 +44,11 @@ export const RiderProfile: React.FC = () => {
       {/* Header Profile Card */}
       <div className="rounded-2xl bg-orange-100 text-orange-950 p-6 shadow-sm border border-orange-200">
         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 text-center sm:text-left">
-          <img
-            src={user.avatar_url || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200'}
-            alt={user.full_name}
-            className="w-20 h-20 rounded-2xl object-cover border-2 border-accent shadow-md"
+          <InitialsAvatar
+            src={user.avatar_url}
+            name={user.full_name}
+            size="xl"
+            className="rounded-2xl border-2 border-accent shadow-md"
           />
           <div className="flex-1 space-y-1">
             <div className="flex flex-col sm:flex-row sm:items-center gap-2">

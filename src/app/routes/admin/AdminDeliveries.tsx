@@ -34,18 +34,15 @@ export const AdminDeliveries: React.FC = () => {
   const [deliveryHistory, setDeliveryHistory] = useState<DeliveryStatusHistory[]>([]);
   const [reassignRiderId, setReassignRiderId] = useState('');
 
-  const loadData = () => {
-    const dels = mockStore.getDeliveries();
-    const rds = mockStore.getRiders();
-    setDeliveries(dels);
-    setRiders(rds);
-  };
-
+  // FIX BUG 2: define loadData inside the effect so it always captures the
+  // latest closed-over variables and satisfies react-hooks/exhaustive-deps.
   useEffect(() => {
+    const loadData = () => {
+      setDeliveries(mockStore.getDeliveries());
+      setRiders(mockStore.getRiders());
+    };
     loadData();
-    const unsubscribe = mockStore.subscribe(() => {
-      loadData();
-    });
+    const unsubscribe = mockStore.subscribe(loadData);
     return () => unsubscribe();
   }, []);
 
@@ -71,14 +68,15 @@ export const AdminDeliveries: React.FC = () => {
     }
   };
 
-  // Filter deliveries
+  // FIX BUG 9: guard against null/undefined full_name before calling .toLowerCase()
   const filteredDeliveries = deliveries.filter((d) => {
+    const q = searchQuery.toLowerCase();
     const matchesSearch =
-      d.order_reference.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      d.dropoff_address.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      d.customer?.full_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      d.rider?.full_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (d.sap_byd_document_id && d.sap_byd_document_id.toLowerCase().includes(searchQuery.toLowerCase()));
+      d.order_reference.toLowerCase().includes(q) ||
+      d.dropoff_address.toLowerCase().includes(q) ||
+      (d.customer?.full_name ?? '').toLowerCase().includes(q) ||
+      (d.rider?.full_name ?? '').toLowerCase().includes(q) ||
+      (d.sap_byd_document_id?.toLowerCase().includes(q) ?? false);
 
     const matchesStatus = statusFilter === 'all' || d.status === statusFilter;
     return matchesSearch && matchesStatus;
@@ -165,8 +163,8 @@ export const AdminDeliveries: React.FC = () => {
                       <td className="py-3 px-4 font-mono text-[11px] text-blue-700">
                         {del.sap_byd_document_id || '--'}
                       </td>
-                      <td className="py-3 px-4 max-w-xs truncate font-medium text-gray-900">
-                        {del.dropoff_address}
+                      <td className="py-3 px-4">
+                        <div className="max-w-xs truncate font-medium text-gray-900">{del.dropoff_address}</div>
                       </td>
                       <td className="py-3 px-4">{del.customer?.full_name || '--'}</td>
                       <td className="py-3 px-4">

@@ -16,7 +16,9 @@ export const CustomerChat: React.FC = () => {
   const loadData = () => {
     if (!user) return;
     const all = mockStore.getDeliveries().filter((d) => d.customer_id === user.id);
-    const active = all.find((d) => ['assigned', 'accepted', 'picked_up', 'in_transit', 'delivered'].includes(d.status));
+    // Prefer in-progress statuses over delivered
+    const inProgressStatuses = ['assigned', 'accepted', 'picked_up', 'in_transit'];
+    const active = all.find((d) => inProgressStatuses.includes(d.status)) ?? all.find((d) => d.status === 'delivered');
     setActiveDelivery(active);
 
     if (active && active.rider_id) {

@@ -43,19 +43,19 @@ export const RiderActiveDelivery: React.FC = () => {
   const [hasSignature, setHasSignature] = useState(false);
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const initializedRef = useRef(false);
   const [isDrawing, setIsDrawing] = useState(false);
 
-  const fetchDelivery = () => {
-    if (!id) return;
-    const found = mockStore.getDeliveryById(id);
-    setDelivery(found);
-  };
-
+  // FIX BUG 5: define fetchDelivery inside the effect so it never holds a
+  // stale closure over `id` and satisfies react-hooks/exhaustive-deps.
   useEffect(() => {
+    const fetchDelivery = () => {
+      if (!id) return;
+      const found = mockStore.getDeliveryById(id);
+      setDelivery(found);
+    };
     fetchDelivery();
-    const unsubscribe = mockStore.subscribe(() => {
-      fetchDelivery();
-    });
+    const unsubscribe = mockStore.subscribe(fetchDelivery);
     return () => unsubscribe();
   }, [id]);
 
@@ -119,7 +119,10 @@ export const RiderActiveDelivery: React.FC = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     // Initialise on first touch in case the canvas was never sized yet
-    if (canvas.width === 380) initCanvas(canvas);
+    if (!initializedRef.current) {
+      initCanvas(canvas);
+      initializedRef.current = true;
+    }
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 

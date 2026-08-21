@@ -4,9 +4,14 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
+// SEC-5 FIX: Restrict CORS to the known frontend origin instead of wildcard (*).
+// Set ALLOWED_ORIGIN in Supabase Edge Function secrets for production.
+const ALLOWED_ORIGIN = Deno.env.get('ALLOWED_ORIGIN') || 'http://localhost:5173';
+
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Origin': ALLOWED_ORIGIN,
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
 
 serve(async (req) => {
@@ -14,13 +19,45 @@ serve(async (req) => {
     return new Response('ok', { headers: corsHeaders });
   }
 
+  // SEC-5 FIX: Require a valid caller JWT (anon or service role) via the
+  // Authorization header. Unauthenticated requests are rejected with 401.
+  const authHeader = req.headers.get('Authorization');
+  if (!authHeader) {
+    return new Response(
+      JSON.stringify({ success: false, error: 'Missing Authorization header.' }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 401 }
+    );
+  }
+
   try {
-    const supabaseClient = createClient(
+    // Create client with user's JWT for auth verification
+    const authClient = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+      {
+        global: { headers: { Authorization: authHeader } },
+        auth: { persistSession: false },
+      }
+    );
+
+    // Verify the JWT and get the user
+    const { data: { user }, error: authError } = await authClient.auth.getUser();
+    if (authError || !user) {
+      return new Response(
+        JSON.stringify({ success: false, error: 'Invalid or expired token.' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 401 }
+      );
+    }
+
+    // Now create admin client with service role for DB operations
+    const adminClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    const useMock = Deno.env.get('VITE_SAP_BYD_USE_MOCK') !== 'false';
+    // SEC-6 FIX: Edge Functions run in Deno — they do NOT use the VITE_ prefix.
+    // The correct key is SAP_BYD_USE_MOCK (set via `supabase secrets set`).
+    const useMock = Deno.env.get('SAP_BYD_USE_MOCK') !== 'false';
     const sapBaseUrl = Deno.env.get('SAP_BYD_BASE_URL') || '';
     const sapAuthToken = Deno.env.get('SAP_BYD_AUTH_TOKEN') || '';
 
@@ -47,7 +84,7 @@ serve(async (req) => {
       // Upsert into deliveries table
       for (const item of mockDeliveries) {
         // Find a customer id
-        const { data: customers } = await supabaseClient
+        const { data: customers } = await adminClient
           .from('profiles')
           .select('id')
           .eq('role', 'customer')
@@ -55,7 +92,7 @@ serve(async (req) => {
 
         const customerId = customers?.[0]?.id;
         if (customerId) {
-          const { data, error } = await supabaseClient
+          const { data, error } = await adminClient
             .from('deliveries')
             .upsert({ ...item, customer_id: customerId }, { onConflict: 'order_reference' })
             .select();

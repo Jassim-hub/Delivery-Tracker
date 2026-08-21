@@ -4,6 +4,7 @@ import { mockStore } from '@/lib/supabase/mock-store';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { useToast } from '@/components/ui/Toast';
 import {
   RefreshCw,
   Database,
@@ -29,10 +30,11 @@ export const AdminSapSync: React.FC = () => {
       mode: 'Mock Adapter (Zero-Cost)',
     },
   ]);
-  const [orders, setOrders] = useState<Array<{ orderRef: string; sapDocId: string; note: DeliveryNote; destination: DestinationDetails }>>([]);
+  const [orders, setOrders] = useState<{ orderRef: string; sapDocId: string; note: DeliveryNote; destination: DestinationDetails }[]>([]);
   const [selectedRawPayload, setSelectedRawPayload] = useState<any>(null);
 
   const isMockMode = import.meta.env.VITE_SAP_BYD_USE_MOCK !== 'false';
+  const { toast } = useToast();
 
   const loadData = async () => {
     try {
@@ -56,8 +58,17 @@ export const AdminSapSync: React.FC = () => {
       const fetched = await defaultSapBydClient.fetchAllPendingOrders();
       setOrders(fetched);
 
-      // Ingest into deliveries store
-      fetched.forEach((item) => {
+      // Ingest into deliveries store (dedup by sap_byd_document_id)
+      const existingDeliveries = mockStore.getDeliveries();
+      const existingSapIds = new Set(existingDeliveries.map((d) => d.sap_byd_document_id).filter(Boolean));
+      let imported = 0;
+      let skipped = 0;
+
+      for (const item of fetched) {
+        if (item.sapDocId && existingSapIds.has(item.sapDocId)) {
+          skipped++;
+          continue;
+        }
         mockStore.addDelivery({
           order_reference: item.orderRef,
           sap_byd_document_id: item.sapDocId,
@@ -70,19 +81,36 @@ export const AdminSapSync: React.FC = () => {
           delivery_notes: item.note.specialInstructions,
           status: 'pending',
         });
-      });
+        imported++;
+      }
+
+      if (imported === 0 && skipped > 0) {
+        toast(`Sync skipped: ${skipped} order(s) already imported`, 'info');
+      } else if (imported > 0) {
+        toast(`Imported ${imported} new order(s)${skipped ? ` (skipped ${skipped} duplicates)` : ''}`, 'success');
+      }
 
       const newLog = {
         id: `sync-${Date.now()}`,
         timestamp: new Date().toISOString(),
-        status: 'success',
-        ordersImported: fetched.length,
+        status: imported > 0 ? 'success' : 'skipped',
+        ordersImported: imported,
         docIds: fetched.map((f) => f.sapDocId),
         mode: isMockMode ? 'Mock Adapter (Zero-Cost)' : 'Real OData v2 Client',
       };
       setSyncHistory([newLog, ...syncHistory]);
     } catch (err: any) {
       console.error(err);
+      toast(`Sync failed: ${err.message || 'Unknown error'}`, 'error');
+      const failLog = {
+        id: `sync-${Date.now()}`,
+        timestamp: new Date().toISOString(),
+        status: 'error',
+        ordersImported: 0,
+        docIds: [],
+        mode: isMockMode ? 'Mock Adapter (Zero-Cost)' : 'Real OData v2 Client',
+      };
+      setSyncHistory([failLog, ...syncHistory]);
     } finally {
       setIsSyncing(false);
     }
@@ -211,7 +239,8 @@ export const AdminSapSync: React.FC = () => {
           </CardTitle>
         </CardHeader>
         <CardContent className="p-0">
-          <table className="w-full text-left text-xs text-gray-700">
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[560px] text-left text-xs text-gray-700">
             <thead className="bg-gray-50 text-[11px] uppercase tracking-wider text-muted font-bold border-b border-gray-100">
               <tr>
                 <th className="py-3 px-4">Timestamp</th>
@@ -231,14 +260,24 @@ export const AdminSapSync: React.FC = () => {
                     {log.docIds.join(', ')}
                   </td>
                   <td className="py-3 px-4 text-right">
-                    <Badge variant="success" className="text-[10px]">
-                      Success
+                    <Badge
+                      variant={
+                        log.status === 'success'
+                          ? 'success'
+                          : log.status === 'error'
+                          ? 'danger'
+                          : 'warning'
+                      }
+                      className="text-[10px]"
+                    >
+                      {log.status.charAt(0).toUpperCase() + log.status.slice(1)}
                     </Badge>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
+        </div>
         </CardContent>
       </Card>
     </div>

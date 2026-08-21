@@ -11,7 +11,8 @@ export const RiderChat: React.FC = () => {
   const { user } = useAuth();
   const [threads, setThreads] = useState<ChatThread[]>([]);
   const [activeDeliveries, setActiveDeliveries] = useState<Delivery[]>([]);
-  const [selectedThreadId, setSelectedThreadId] = useState<string>('');
+  const [adminThreadId, setAdminThreadId] = useState<string>('');
+  const [customerThreadId, setCustomerThreadId] = useState<string>('');
 
   const loadData = () => {
     if (!user) return;
@@ -23,8 +24,17 @@ export const RiderChat: React.FC = () => {
     );
     setActiveDeliveries(dels);
 
-    if (!selectedThreadId && allThreads.length > 0) {
-      setSelectedThreadId(allThreads[0].id);
+    // Ensure admin thread exists and cache its id
+    const adminThread = mockStore.getOrCreateChatThread('admin_rider', null, user.id, 'a0000000-0000-0000-0000-000000000001');
+    setAdminThreadId(adminThread.id);
+
+    // Ensure customer thread exists for the first active delivery
+    const currentDelivery = dels[0];
+    if (currentDelivery) {
+      const customerThread = mockStore.getOrCreateChatThread('rider_customer', currentDelivery.id, user.id, currentDelivery.customer_id);
+      setCustomerThreadId(customerThread.id);
+    } else {
+      setCustomerThreadId('');
     }
   };
 
@@ -38,14 +48,7 @@ export const RiderChat: React.FC = () => {
 
   if (!user) return null;
 
-  // Find admin thread (persistent)
-  const adminThread = mockStore.getOrCreateChatThread('admin_rider', null, user.id, 'a0000000-0000-0000-0000-000000000001');
-
-  // Customer thread for currently active delivery (if any)
   const currentDelivery = activeDeliveries[0];
-  const customerThread = currentDelivery
-    ? mockStore.getOrCreateChatThread('rider_customer', currentDelivery.id, user.id, currentDelivery.customer_id)
-    : null;
 
   return (
     <div className="space-y-4 pb-12 max-w-3xl mx-auto">
@@ -70,9 +73,9 @@ export const RiderChat: React.FC = () => {
 
         {/* Tab 1: Customer Chat */}
         <TabsContent value="customer">
-          {customerThread && currentDelivery ? (
+          {customerThreadId && currentDelivery ? (
             <ChatWindow
-              threadId={customerThread.id}
+              threadId={customerThreadId}
               currentUser={user}
               recipientName={currentDelivery.customer?.full_name || 'Customer'}
               recipientRole="customer"
@@ -91,12 +94,14 @@ export const RiderChat: React.FC = () => {
 
         {/* Tab 2: Admin Dispatch Chat */}
         <TabsContent value="admin">
-          <ChatWindow
-            threadId={adminThread.id}
-            currentUser={user}
-            recipientName="Central Dispatch HQ"
-            recipientRole="admin"
-          />
+          {adminThreadId && (
+            <ChatWindow
+              threadId={adminThreadId}
+              currentUser={user}
+              recipientName="Central Dispatch HQ"
+              recipientRole="admin"
+            />
+          )}
         </TabsContent>
       </Tabs>
     </div>

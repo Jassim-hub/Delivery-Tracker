@@ -18,6 +18,10 @@ interface DeliveryTrackingMapProps {
   height?: string;
 }
 
+// Each mounted map instance needs a unique SVG defs id to avoid cross-instance
+// pattern conflicts (FIX INEFFICIENCY 6 — duplicate id="grid" in SVG defs).
+let _mapInstanceCounter = 0;
+
 export const DeliveryTrackingMap: React.FC<DeliveryTrackingMapProps> = ({
   riderLocation,
   pickupLocation,
@@ -28,6 +32,8 @@ export const DeliveryTrackingMap: React.FC<DeliveryTrackingMapProps> = ({
   height = '380px',
 }) => {
   const [zoomLevel, setZoomLevel] = useState(1);
+  // Stable unique id per component instance — never changes after mount.
+  const patternId = React.useRef(`map-grid-${++_mapInstanceCounter}`).current;
 
   // Calculate real-time distance and ETA
   const targetLocation = status === 'assigned' || status === 'accepted' ? pickupLocation : dropoffLocation;
@@ -53,16 +59,20 @@ export const DeliveryTrackingMap: React.FC<DeliveryTrackingMapProps> = ({
   const latRange = Math.max(0.001, maxLat - minLat);
   const lngRange = Math.max(0.001, maxLng - minLng);
 
-  // SVG coordinate mapper
+  // SVG coordinate mapper with clamping to prevent label overlap
   const toX = (lng: number) => {
     const raw = ((lng - minLng) / lngRange) * 100;
-    return 10 + (raw * 0.8);
+    const x = 10 + (raw * 0.8);
+    // Clamp X to 15-85% to leave margins and avoid ETA overlay
+    return Math.max(15, Math.min(85, x));
   };
 
   const toY = (lat: number) => {
     // Latitude is inverted in SVG (higher lat = lower Y)
     const raw = ((maxLat - lat) / latRange) * 100;
-    return 10 + (raw * 0.8);
+    const y = 10 + (raw * 0.8);
+    // Clamp Y to 15-85% (below ETA overlay at top-3, above zoom controls at bottom-3)
+    return Math.max(15, Math.min(85, y));
   };
 
   const riderX = toX(riderLocation.lng);
@@ -88,18 +98,18 @@ export const DeliveryTrackingMap: React.FC<DeliveryTrackingMapProps> = ({
         className="w-full h-full transition-transform duration-300 select-none"
         style={{ transform: `scale(${zoomLevel})` }}
         viewBox="0 0 100 100"
-        preserveAspectRatio="none"
+        preserveAspectRatio="xMidYMid meet"
       >
         <defs>
-          {/* Street Grid Pattern */}
-          <pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse">
+          {/* Street Grid Pattern — instance-scoped id to avoid SVG defs collisions */}
+          <pattern id={patternId} width="10" height="10" patternUnits="userSpaceOnUse">
             <path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255, 255, 255, 0.05)" strokeWidth="0.5" />
           </pattern>
         </defs>
 
         {/* Map Background */}
         <rect width="100%" height="100%" fill="#9A3412" />
-        <rect width="100%" height="100%" fill="url(#grid)" />
+        <rect width="100%" height="100%" fill={`url(#${patternId})`} />
         <circle cx="50" cy="50" r="45" fill="#0C4A6E" opacity="0.35" />
 
         {/* Road networks simulation */}

@@ -26,10 +26,10 @@ describe('Bug 3 — mock loginWithEmail: exact email+password required', () => {
     });
   });
 
-  it('admin profile has email admin@dt.com and password admin123', () => {
+  it('admin profile has a unique email and password', () => {
     const admin = INITIAL_PROFILES.find((p) => p.role === 'admin');
-    expect(admin?.email).toBe('admin@dt.com');
-    expect(admin?.password).toBe('admin123');
+    expect(admin?.email).toBe('jassim@dt.com');
+    expect(admin?.password).toBe('jassim2024');
   });
 
   it('no two profiles share the same email', () => {

@@ -87,7 +87,7 @@ export const RoleSwitcher: React.FC = () => {
                           {p.full_name}
                         </div>
                         <div className={`text-[10px] capitalize ${isActive ? 'text-blue-100' : 'text-muted'}`}>
-                          {p.role} {p.role === 'rider' ? '• Yamaha DT 125' : ''}
+                          {p.role} • {p.email}
                         </div>
                       </div>
                     </div>

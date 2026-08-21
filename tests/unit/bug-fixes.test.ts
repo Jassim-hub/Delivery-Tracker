@@ -28,7 +28,7 @@ describe('Bug 3 — mock loginWithEmail: exact email+password required', () => {
 
   it('admin profile has a unique email and password', () => {
     const admin = INITIAL_PROFILES.find((p) => p.role === 'admin');
-    expect(admin?.email).toBe('jassim@dt.com');
+    expect(admin?.email).toBe('jassimkasule@gmail.com');
     expect(admin?.password).toBe('jassim2024');
   });
 

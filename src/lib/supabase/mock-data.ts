@@ -4,7 +4,7 @@ export const INITIAL_PROFILES: Profile[] = [
   {
     id: 'a0000000-0000-0000-0000-000000000001',
     full_name: 'Kasule Jassim',
-    email: 'jassim@dt.com',
+    email: 'jassimkasule@gmail.com',
     password: 'jassim2024',
     phone: '+256 700 112 233',
     role: 'admin',
@@ -16,7 +16,7 @@ export const INITIAL_PROFILES: Profile[] = [
   {
     id: 'b0000000-0000-0000-0000-000000000001',
     full_name: 'Yawe Ivan',
-    email: 'ivan@dt.com',
+    email: 'yaweivan3@gmail.com',
     password: 'ivan2024',
     phone: '+256 772 123 456',
     role: 'rider',
@@ -28,7 +28,7 @@ export const INITIAL_PROFILES: Profile[] = [
   {
     id: 'b0000000-0000-0000-0000-000000000002',
     full_name: 'Mugabi Kevin',
-    email: 'kevin@dt.com',
+    email: 'bladeimmy09@gmail.com',
     password: 'kevin2024',
     phone: '+256 782 987 654',
     role: 'rider',
@@ -51,7 +51,7 @@ export const INITIAL_PROFILES: Profile[] = [
   {
     id: 'c0000000-0000-0000-0000-000000000001',
     full_name: 'David Kazibwe',
-    email: 'david@dt.com',
+    email: 'kazibwed499@gmail.com',
     password: 'david2024',
     phone: '+256 750 334 455',
     role: 'customer',

@@ -42,7 +42,7 @@ export const LoginPage: React.FC = () => {
   const customerProfile = availableProfiles.find((p) => p.role === 'customer');
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-sky-50">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-sky-50 dark:bg-gray-950">
       <div className="w-full max-w-md space-y-5 animate-fade-in">
         {/* Brand Header */}
         <div className="text-center space-y-2">
@@ -116,7 +116,7 @@ export const LoginPage: React.FC = () => {
         </Card>
 
         {/* Email / Password Sign In Form */}
-        <Card className="shadow-card p-6 bg-white">
+        <Card className="shadow-card p-6 bg-white dark:bg-gray-900">
           <form onSubmit={handleSubmit} className="space-y-4">
             <h2 className="text-sm font-bold text-gray-900 uppercase tracking-wider">
               Account Credentials Sign In

@@ -1,29 +1,30 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { mockStore } from '@/lib/supabase/mock-store';
+import { useToast } from '@/components/ui/Toast';
 import { Rider } from '@/types';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Bike, Star, CheckCircle2, Power, PhoneCall, Shield } from 'lucide-react';
+import { InitialsAvatar } from '@/components/ui/InitialsAvatar';
+import { Bike, Star, Power, PhoneCall } from 'lucide-react';
 import { formatDateTime } from '@/lib/utils';
 
 export const AdminRiders: React.FC = () => {
   const [riders, setRiders] = useState<Rider[]>([]);
-
-  const loadData = () => {
-    setRiders(mockStore.getRiders());
-  };
+  const { toast } = useToast();
 
   useEffect(() => {
+    const loadData = () => setRiders(mockStore.getRiders());
     loadData();
-    const unsubscribe = mockStore.subscribe(() => {
-      loadData();
-    });
+    const unsubscribe = mockStore.subscribe(loadData);
     return () => unsubscribe();
   }, []);
 
   const handleToggleOnline = (userId: string, currentStatus: boolean) => {
-    mockStore.setRiderOnlineStatus(userId, !currentStatus);
+    const newStatus = !currentStatus;
+    mockStore.setRiderOnlineStatus(userId, newStatus);
+    const name = riders.find((r) => r.user_id === userId)?.profile?.full_name ?? 'Rider';
+    toast(`${name} set to ${newStatus ? 'Online' : 'Offline'}`, newStatus ? 'success' : 'info');
   };
 
   return (
@@ -46,10 +47,11 @@ export const AdminRiders: React.FC = () => {
             <CardContent className="p-5 space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <img
-                    src={rider.profile?.avatar_url || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150'}
-                    alt={rider.profile?.full_name}
-                    className="w-12 h-12 rounded-xl object-cover border border-gray-200"
+                  <InitialsAvatar
+                    src={rider.profile?.avatar_url}
+                    name={rider.profile?.full_name ?? 'Rider'}
+                    size="lg"
+                    className="rounded-xl border border-gray-200"
                   />
                   <div>
                     <h3 className="text-sm font-bold text-gray-900">{rider.profile?.full_name}</h3>

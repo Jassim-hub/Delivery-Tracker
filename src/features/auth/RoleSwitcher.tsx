@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthContext';
 import { mockStore } from '@/lib/supabase/mock-store';
+import { InitialsAvatar } from '@/components/ui/InitialsAvatar';
 import { Users, Shield, Bike, UserCheck, RotateCcw, Tv, ChevronDown } from 'lucide-react';
 
 export const RoleSwitcher: React.FC = () => {
@@ -64,24 +65,25 @@ export const RoleSwitcher: React.FC = () => {
 
             {/* Profile List */}
             <div className="space-y-1 max-h-60 overflow-y-auto">
-              {availableProfiles.map((p) => {
-                const isActive = user?.id === p.id;
-                return (
-                  <button
-                    key={p.id}
-                    onClick={() => handleSwitch(p.id, p.role)}
-                    className={`w-full flex items-center justify-between p-2 rounded-xl text-left transition-all ${
-                      isActive
-                        ? 'bg-primary text-white font-semibold shadow-sm'
-                        : 'hover:bg-gray-100 text-gray-800'
-                    }`}
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <img
-                        src={p.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100'}
-                        alt={p.full_name}
-                        className="w-7 h-7 rounded-full object-cover border border-white/30"
-                      />
+                {availableProfiles.map((p) => {
+                  const isActive = user?.id === p.id;
+                  return (
+                    <button
+                      key={p.id}
+                      onClick={() => handleSwitch(p.id, p.role)}
+                      className={`w-full flex items-center justify-between p-2 rounded-xl text-left transition-all ${
+                        isActive
+                          ? 'bg-primary text-white font-semibold shadow-sm'
+                          : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <InitialsAvatar
+                          src={p.avatar_url}
+                          name={p.full_name}
+                          size="sm"
+                          className="border border-white/30"
+                        />
                       <div>
                         <div className={`text-xs ${isActive ? 'text-white font-bold' : 'text-gray-900 font-semibold'}`}>
                           {p.full_name}

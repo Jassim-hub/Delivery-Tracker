@@ -35,7 +35,7 @@ export const SignupPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-sky-50">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-sky-50 dark:bg-gray-950">
       <div className="w-full max-w-md space-y-5 animate-fade-in">
         {/* Brand Header */}
         <div className="text-center space-y-2">
@@ -48,7 +48,7 @@ export const SignupPage: React.FC = () => {
           </p>
         </div>
 
-        <Card className="shadow-card p-6 bg-white">
+        <Card className="shadow-card p-6 bg-white dark:bg-gray-900">
           <form onSubmit={handleSubmit} className="space-y-4">
             {error && (
               <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-700 font-medium">

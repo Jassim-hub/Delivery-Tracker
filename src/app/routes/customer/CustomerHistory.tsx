@@ -16,6 +16,8 @@ import {
   FileText,
   CheckCircle2,
   Bike,
+  Search,
+  Filter,
 } from 'lucide-react';
 import { formatDateTime, getStatusBadgeProps } from '@/lib/utils';
 
@@ -25,23 +27,29 @@ export const CustomerHistory: React.FC = () => {
   const [deliveries, setDeliveries] = useState<Delivery[]>([]);
   const [ratings, setRatings] = useState<Rating[]>([]);
   const [ratingDelivery, setRatingDelivery] = useState<Delivery | null>(null);
-
-  const loadData = () => {
-    if (!user) return;
-    const all = mockStore.getDeliveries().filter((d) => d.customer_id === user.id);
-    setDeliveries(all);
-
-    const rts = mockStore.getRatings();
-    setRatings(rts);
-  };
+  const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
 
   useEffect(() => {
+    const loadData = () => {
+      if (!user) return;
+      setDeliveries(mockStore.getDeliveries().filter((d) => d.customer_id === user.id));
+      setRatings(mockStore.getRatings());
+    };
     loadData();
-    const unsubscribe = mockStore.subscribe(() => {
-      loadData();
-    });
+    const unsubscribe = mockStore.subscribe(loadData);
     return () => unsubscribe();
   }, [user?.id]);
+
+  const filteredDeliveries = deliveries.filter((d) => {
+    const matchesSearch =
+      !search ||
+      d.order_reference.toLowerCase().includes(search.toLowerCase()) ||
+      d.dropoff_address.toLowerCase().includes(search.toLowerCase()) ||
+      d.pickup_address.toLowerCase().includes(search.toLowerCase());
+    const matchesStatus = statusFilter === 'all' || d.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
 
   if (!user) return null;
 
@@ -50,22 +58,50 @@ export const CustomerHistory: React.FC = () => {
       <div className="flex items-center justify-between">
         <button
           onClick={() => navigate('/customer')}
-          className="flex items-center gap-1.5 text-xs font-bold text-gray-700 hover:text-primary p-1.5 rounded-lg hover:bg-white transition-all"
+          className="flex items-center gap-1.5 text-xs font-bold text-gray-700 dark:text-gray-300 hover:text-primary p-1.5 rounded-lg hover:bg-white dark:hover:bg-gray-800 transition-all"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back to Live Tracking</span>
         </button>
-        <h2 className="text-base font-bold text-gray-900">Your Delivery History</h2>
+        <h2 className="text-base font-bold text-gray-900 dark:text-gray-100">Your Delivery History</h2>
+      </div>
+
+      {/* Search & Filter bar */}
+      <div className="flex flex-col sm:flex-row gap-2">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted" />
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search by order ref or address…"
+            className="w-full pl-9 pr-3 py-2 text-xs rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-primary"
+          />
+        </div>
+        <div className="relative">
+          <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted pointer-events-none" />
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="pl-9 pr-3 py-2 text-xs rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-primary"
+          >
+            <option value="all">All Statuses</option>
+            <option value="pending">Pending</option>
+            <option value="in_transit">In Transit</option>
+            <option value="delivered">Delivered</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+        </div>
       </div>
 
       <div className="space-y-3">
-        {deliveries.length === 0 ? (
+        {filteredDeliveries.length === 0 ? (
           <Card className="p-8 text-center text-muted">
             <PackageCheck className="w-10 h-10 text-primary/30 mx-auto mb-2" />
             <p className="text-xs font-semibold text-gray-700">No past orders found.</p>
           </Card>
         ) : (
-          deliveries.map((del) => {
+          filteredDeliveries.map((del) => {
             const rating = ratings.find((r) => r.delivery_id === del.id);
             const badgeProps = getStatusBadgeProps(del.status);
 
@@ -137,7 +173,7 @@ export const CustomerHistory: React.FC = () => {
           deliveryId={ratingDelivery.id}
           customerId={user.id}
           riderId={ratingDelivery.rider_id || 'b0000000-0000-0000-0000-000000000001'}
-          riderName={ratingDelivery.rider?.full_name || 'John Mukasa'}
+          riderName={ratingDelivery.rider?.full_name || 'Yawe Ivan'}
           orderReference={ratingDelivery.order_reference}
           onSubmitted={() => setRatingDelivery(null)}
         />

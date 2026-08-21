@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/features/auth/AuthContext';
 import { mockStore } from '@/lib/supabase/mock-store';
+import { useToast } from '@/components/ui/Toast';
 import { Delivery, Rider, Profile } from '@/types';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -26,6 +27,7 @@ import { OnboardingCarousel } from '@/components/onboarding/OnboardingCarousel';
 
 export const AdminDashboard: React.FC = () => {
   const { user } = useAuth();
+  const { toast } = useToast();
   const navigate = useNavigate();
 
   const [deliveries, setDeliveries] = useState<Delivery[]>([]);
@@ -58,6 +60,9 @@ export const AdminDashboard: React.FC = () => {
   const handleQuickAssign = (deliveryId: string, riderId: string) => {
     if (!user || !riderId) return;
     mockStore.assignDeliveryToRider(deliveryId, riderId, user.id);
+    const riderName = riders.find((r) => r.user_id === riderId)?.profile?.full_name || 'rider';
+    const delivery = deliveries.find((d) => d.id === deliveryId);
+    toast(`Dispatched ${delivery?.order_reference ?? 'order'} to ${riderName} ✓`);
   };
 
   return (

@@ -571,15 +571,17 @@ class MockDataStore {
   private recalculateRiderStats(riderId: string): void {
     const ratings = this.getRatings(riderId);
     const deliveries = this.getDeliveries().filter((d) => d.rider_id === riderId && d.status === 'delivered');
-    
+
     let avg = 0;
     if (ratings.length > 0) {
       const sum = ratings.reduce((acc, curr) => acc + curr.stars, 0);
       avg = Math.round((sum / ratings.length) * 10) / 10;
     }
 
-    const riders = this.getRiders();
-    const updated = riders.map((r) =>
+    // Bug 10 fix: read from the RAW riders store (no joined profile), update,
+    // and write back so we never bake the joined `profile` field into storage.
+    const rawRiders = JSON.parse(localStorage.getItem(STORAGE_KEYS.RIDERS) || '[]');
+    const updated = rawRiders.map((r: Rider) =>
       r.user_id === riderId
         ? {
             ...r,

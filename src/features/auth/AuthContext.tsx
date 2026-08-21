@@ -9,7 +9,7 @@ interface AuthContextType {
   isLoading: boolean;
   loginAs: (profileId: string) => void;
   loginWithEmail: (email: string, password?: string) => Promise<{ error?: string }>;
-  signup: (fullName: string, email: string, phone: string, role: 'rider' | 'customer') => Promise<{ error?: string }>;
+  signup: (fullName: string, email: string, phone: string, role: 'rider' | 'customer', password?: string) => Promise<{ error?: string }>;
   logout: () => void;
   availableProfiles: Profile[];
 }
@@ -90,25 +90,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const loginWithEmail = async (email: string, _password?: string): Promise<{ error?: string }> => {
+  const loginWithEmail = async (email: string, password?: string): Promise<{ error?: string }> => {
     if (isUsingMockBackend) {
       const allProfiles = mockStore.getProfiles();
+      // Bug 3 fix: exact email + password match — no fuzzy name/role shortcuts
       const match = allProfiles.find(
-        (p) => p.full_name.toLowerCase().includes(email.split('@')[0].toLowerCase()) || p.role === email.toLowerCase()
+        (p) => p.email?.toLowerCase() === email.toLowerCase() && p.password === password
       );
       if (match) {
         loginAs(match.id);
         return {};
       }
-      // fallback
-      loginAs(allProfiles[0].id);
-      return {};
+      return { error: 'Invalid email or password.' };
     }
 
     try {
       const { error } = await supabase.auth.signInWithPassword({
         email,
-        password: _password || 'password123',
+        password: password || 'password123',
       });
       if (error) return { error: error.message };
       return {};
@@ -119,13 +118,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signup = async (
     fullName: string,
-    _email: string,
+    email: string,
     phone: string,
-    role: 'rider' | 'customer'
+    role: 'rider' | 'customer',
+    password?: string,
   ): Promise<{ error?: string }> => {
+    // Check for duplicate email
+    const existingProfiles = mockStore.getProfiles();
+    if (email && existingProfiles.some((p) => p.email?.toLowerCase() === email.toLowerCase())) {
+      return { error: 'An account with that email already exists.' };
+    }
+
     const newProfile: Profile = {
       id: `${role[0]}${Date.now().toString().slice(-11)}`,
       full_name: fullName,
+      email,
+      password: password || 'password123',
       phone,
       role,
       avatar_url: `https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150`,
@@ -133,13 +141,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       updated_at: new Date().toISOString(),
     };
 
-    const currentProfiles = mockStore.getProfiles();
-    currentProfiles.push(newProfile);
-    localStorage.setItem('dt_profiles_v1', JSON.stringify(currentProfiles));
+    existingProfiles.push(newProfile);
+    localStorage.setItem('dt_profiles_v1', JSON.stringify(existingProfiles));
 
     if (role === 'rider') {
-      const riders = mockStore.getRiders();
-      riders.push({
+      // getRiders() returns joined objects — strip profile join before saving
+      const rawRiders = JSON.parse(localStorage.getItem('dt_riders_v1') || '[]');
+      rawRiders.push({
         user_id: newProfile.id,
         vehicle_type: 'Motorcycle',
         license_plate: 'UAA 100A',
@@ -152,10 +160,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       });
-      localStorage.setItem('dt_riders_v1', JSON.stringify(riders));
+      localStorage.setItem('dt_riders_v1', JSON.stringify(rawRiders));
     } else {
-      const customers = mockStore.getProfiles().filter((p) => p.role === 'customer');
-      localStorage.setItem('dt_customers_v1', JSON.stringify(customers));
+      // Bug 2 fix: write a proper Customer row for the new customer profile
+      const rawCustomers = JSON.parse(localStorage.getItem('dt_customers_v1') || '[]');
+      rawCustomers.push({
+        user_id: newProfile.id,
+        default_address: null,
+        default_lat: null,
+        default_lng: null,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      });
+      localStorage.setItem('dt_customers_v1', JSON.stringify(rawCustomers));
     }
 
     loginAs(newProfile.id);

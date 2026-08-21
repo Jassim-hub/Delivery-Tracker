@@ -69,33 +69,36 @@ export const CustomerDashboard: React.FC = () => {
   const currentTutorialSlide = customerTutorialSlides[tutorialSlideIndex];
   const CurrentTutorialIcon = currentTutorialSlide.icon;
 
-  const loadData = () => {
-    if (!user) return;
-    const all = mockStore.getDeliveries().filter((d) => d.customer_id === user.id);
-    setDeliveries(all);
-
-    // Active in-transit or assigned delivery
-    const active = all.find((d) => ['pending', 'assigned', 'accepted', 'picked_up', 'in_transit'].includes(d.status));
-    setActiveDelivery(active);
-
-    if (active?.rider_id) {
-      const r = mockStore.getRiderById(active.rider_id);
-      setRiderInfo(r);
-    }
-
-    // Check for recently completed delivery needing rating
-    const unrated = all.find((d) => d.status === 'delivered' && !mockStore.getRatingForDelivery(d.id));
-    if (unrated && !ratingDelivery && !sessionStorage.getItem(`dt_rating_prompted_${unrated.id}`)) {
-      sessionStorage.setItem(`dt_rating_prompted_${unrated.id}`, 'true');
-      setRatingDelivery(unrated);
-    }
-  };
-
   useEffect(() => {
+    // Bug 4 fix: all fetch logic inside the effect for a fresh closure.
+    // Bug 5 fix: ratingDelivery check uses a ref-stable setter form so it never
+    //            reads a stale closure value.
+    const loadData = () => {
+      if (!user) return;
+      const all = mockStore.getDeliveries().filter((d) => d.customer_id === user.id);
+      setDeliveries(all);
+
+      const active = all.find((d) => ['pending', 'assigned', 'accepted', 'picked_up', 'in_transit'].includes(d.status));
+      setActiveDelivery(active);
+
+      if (active?.rider_id) {
+        const r = mockStore.getRiderById(active.rider_id);
+        setRiderInfo(r);
+      }
+
+      // Bug 5 fix: use functional updater so we read current state, not closure snapshot
+      const unrated = all.find((d) => d.status === 'delivered' && !mockStore.getRatingForDelivery(d.id));
+      if (unrated && !sessionStorage.getItem(`dt_rating_prompted_${unrated.id}`)) {
+        setRatingDelivery((current) => {
+          if (current) return current; // modal already open — don't replace
+          sessionStorage.setItem(`dt_rating_prompted_${unrated.id}`, 'true');
+          return unrated;
+        });
+      }
+    };
+
     loadData();
-    const unsubscribe = mockStore.subscribe(() => {
-      loadData();
-    });
+    const unsubscribe = mockStore.subscribe(loadData);
     return () => unsubscribe();
   }, [user?.id]);
 

@@ -71,9 +71,13 @@ export const LoginPage: React.FC = () => {
                 onClick={() => handleQuickDemoLogin(riderProfile.id, 'rider')}
                 className="flex flex-col items-center p-2.5 rounded-xl bg-white hover:bg-blue-50 border border-amber-200 shadow-sm transition-all hover:scale-105"
               >
-                <Bike className="w-5 h-5 text-accent mb-1" />
+                {riderProfile.avatar_url ? (
+                  <img src={riderProfile.avatar_url} alt={riderProfile.full_name} className="w-7 h-7 rounded-full object-cover mb-1 border border-amber-200" onError={(e) => { (e.target as HTMLImageElement).style.display='none'; }} />
+                ) : (
+                  <Bike className="w-5 h-5 text-accent mb-1" />
+                )}
                 <span className="text-[11px] font-bold text-gray-900">Rider</span>
-                <span className="text-[9px] text-muted">John Mukasa</span>
+                <span className="text-[9px] text-muted">{riderProfile.full_name.split(' ')[0]}</span>
               </button>
             )}
 
@@ -83,9 +87,13 @@ export const LoginPage: React.FC = () => {
                 onClick={() => handleQuickDemoLogin(customerProfile.id, 'customer')}
                 className="flex flex-col items-center p-2.5 rounded-xl bg-white hover:bg-blue-50 border border-amber-200 shadow-sm transition-all hover:scale-105"
               >
-                <UserCheck className="w-5 h-5 text-emerald-600 mb-1" />
+                {customerProfile.avatar_url ? (
+                  <img src={customerProfile.avatar_url} alt={customerProfile.full_name} className="w-7 h-7 rounded-full object-cover mb-1 border border-amber-200" onError={(e) => { (e.target as HTMLImageElement).style.display='none'; }} />
+                ) : (
+                  <UserCheck className="w-5 h-5 text-emerald-600 mb-1" />
+                )}
                 <span className="text-[11px] font-bold text-gray-900">Customer</span>
-                <span className="text-[9px] text-muted">Grace T.</span>
+                <span className="text-[9px] text-muted">{customerProfile.full_name.split(' ')[0]}</span>
               </button>
             )}
 
@@ -95,9 +103,13 @@ export const LoginPage: React.FC = () => {
                 onClick={() => handleQuickDemoLogin(adminProfile.id, 'admin')}
                 className="flex flex-col items-center p-2.5 rounded-xl bg-white hover:bg-blue-50 border border-amber-200 shadow-sm transition-all hover:scale-105"
               >
-                <Shield className="w-5 h-5 text-blue-700 mb-1" />
+                {adminProfile.avatar_url ? (
+                  <img src={adminProfile.avatar_url} alt={adminProfile.full_name} className="w-7 h-7 rounded-full object-cover mb-1 border border-amber-200" onError={(e) => { (e.target as HTMLImageElement).style.display='none'; }} />
+                ) : (
+                  <Shield className="w-5 h-5 text-blue-700 mb-1" />
+                )}
                 <span className="text-[11px] font-bold text-gray-900">Admin</span>
-                <span className="text-[9px] text-muted">Dispatch HQ</span>
+                <span className="text-[9px] text-muted">{adminProfile.full_name.split(' ')[0]}</span>
               </button>
             )}
           </div>
